@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flash">
+    {% for message in messages %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+    {{ name }} {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+{% if name %}
+<h2>Hello {{ name }}!!</h2>
+{% else %}
+<h2>What's Your Name?</h2>
+<br/>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    {{ form.name.label(class="form-label") }}
+    {{ form.name(class="form-control") }}
+    <br>
+    {{ form.submit(class="btn btn-secondary") }}
+</form>
+
+{% endif %}
+{% endblock %}
