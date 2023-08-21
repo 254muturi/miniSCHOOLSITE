@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="my-3 mt-5 parent_and_guardian-container">
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='images/skoolKids.jpeg') }}" class="d-block w-100" alt="Slide 1">
+        </div>
+        <div class="text-container">
+            <h3 class="heading text-center">Message To Our Parents and Guardians</h3>
+            <h6 class="paragraph">
+                Dear Parent,
+
+                I want to stress the importance of timely school fee payment and active support with your child's
+                homework. These actions shape their education and overall development. Paying fees on time ensures a
+                smooth functioning of the school and shows commitment to your child's education. Involvement in their
+                homework boosts their motivation, confidence, and academic success. These efforts contribute to
+                educational continuity, teach responsibility, improve academic performance, strengthen bonds, and foster
+                communication. Your commitment to education makes a difference in their lives.
+
+                Thank you for your dedication.
+
+                Regards,
+                Mr Ogolla:
+            </h6>
+        </div>
+    </div>
+{% endblock %}

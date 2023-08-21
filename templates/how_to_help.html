@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+<center><h3>Help Us Make a Difference For These Kids' Future</h3></center>
+<div class="my-1 mt-5 about-container">
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='images/Connecting-Kenyan-School-children-1024x488.jpg') }}"
+             class="d-block w-100" alt="Slide 1">
+    </div>
+    <div class="text-container">
+        <h3 class="heading text-center">About Us</h3>
+        <p class="paragraph">
+            <!-- Add some content about your cause here -->
+        </p>
+    </div>
+</div>
+<div class="my-3 mt-5 about-container">
+    <div class="text-container">
+        <form>
+            <h3>Your Information</h3>
+            <div class="row mb-4">
+                <div class="col">
+                    <div class="form-outline">
+                        <input type="text" id="form6Example1" class="form-control"/>
+                        <label class="form-label" for="form6Example1">First name</label>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-outline">
+                        <input type="text" id="form6Example2" class="form-control"/>
+                        <label class="form-label" for="form6Example2">Last name</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-outline mb-4">
+                <input type="email" id="form6Example3" class="form-control"/>
+                <label class="form-label" for="form6Example3">Email Address</label>
+            </div>
+            <div class="form-outline mb-4">
+                <input type="tel" id="form6Example4" class="form-control"/>
+                <label class="form-label" for="form6Example4">Phone Number</label>
+            </div>
+    </div>
+
+    <!-- Donation buttons -->
+    <button type="submit" class="btn btn-primary btn-block mb-4">Submit</button>
+    <button type="submit" class="btn btn-primary btn-block mb-4">Make a Donation</button>
+
+    <h5>Select your preferred payment method to Donate with </h5>
+
+    <!-- Donation options -->
+    <button type="button" id="mpesaButton" class="btn btn-success btn-block mb-3 donation-option">
+        <img src="{{ url_for('static', filename='images/mpesa-logo-AE44B6F8EB-seeklogo.com.png') }}" alt="M-Pesa Icon" class="btn-icon"
+             style="width: 20px; height: 20px;">
+        M-Pesa
+    </button>
+
+    <button type="button" class="btn btn-danger btn-block mb-3 donation-option">Airtel Money</button>
+    <button type="button" class="btn btn-info btn-block mb-3 donation-option">Bank Transfer</button>
+
+    <div class="form-outline">
+        <input type="tel" id="typePhone" class="form-control" placeholder="Amount to Donate"/>
+        <label class="form-label" for="typePhone">Amount</label>
+    </div>
+
+    </form>
+</div>
+</div>
+
+<!-- JavaScript to handle donation options and M-Pesa button -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const donationOptions = document.querySelectorAll(".donation-option");
+
+        // Attach click event to each donation option button
+        donationOptions.forEach(function (option) {
+            option.addEventListener("click", function () {
+                // Remove 'active' class from all buttons
+                donationOptions.forEach(function (btn) {
+                    btn.classList.remove("active");
+                });
+
+                // Add 'active' class to the clicked button
+                option.classList.add("active");
+            });
+        });
+
+        const mpesaButton = document.getElementById("mpesaButton");
+
+        // Attach click event to the M-Pesa button
+        mpesaButton.addEventListener("click", function () {
+            const phoneNumber = document.getElementById("form6Example4").value;
+            const mpesaUrl = `URL_TO_M_PESA_API?phone=${phoneNumber}`;
+            window.open(mpesaUrl, "_blank");
+        });
+    });
+</script>
+{% endblock %}

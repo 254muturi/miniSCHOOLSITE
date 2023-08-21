@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="my-3 mt-5 about-container">
+    <div class="image-container">
+        <img src="{{ url_for('static', filename='images/skoolKids.jpeg') }}" class="d-block w-100" alt="Slide 1">
+    </div>
+    <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+        <!-- Left -->
+        <div class="me-5 d-none d-lg-block">
+            <span>Get connected with us on social networks:</span>
+        </div>
+
+    </section>
+
+    <!-- Grid container -->
+
+    <!-- Grid column -->
+    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+        <!-- Links -->
+        <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+        <p><i class="fas fa-home me-3"></i> Nairobi, Kenya</p>
+        <p>
+            <i class="fas fa-envelope me-3"></i>
+            <a href="mailto:info@fadhilifoundation.com">info@fadhilifoundation.com</a>
+        </p>
+        <p><i class="fas fa-phone me-3"></i> + 01 234 567 88</p>
+        <p><i class="fas fa-print me-3"></i> + 01 234 567 89</p>
+    </div>
+    <!-- Grid column -->
+</div>
+<!-- Grid row -->
+</div>
+</section>
+</div>
+{% endblock %}

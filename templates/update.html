@@ -26,6 +26,11 @@
     {{ form.name.label(class="form-label") }}
     {{ form.name(class="form-control",value=name_to_update.name) }}
     <br>
+     {{ form.grade.label(class="form-label") }}
+    {{ form.grade(class="form-control",value=name_to_update.grade) }}
+    {{ form.parent_name.label(class="form-label") }}
+    {{ form.parent_name(class="form-control",value=name_to_update.parent_name) }}
+
     {{ form.email.label(class="form-label") }}
     {{ form.email(class="form-control",value=name_to_update.email) }}
     {{ form.phone_number.label(class="form-label") }}
@@ -46,7 +51,9 @@
      <tr>
 
     <td>
- {{ our_user.id }}. {{ our_user.name }} - {{ our_user.email }}
+ {{ our_user.id }}. {{ our_user.name }} -
+        {{ our_user.grade }}{{ our_user.parent_name }}
+        - {{ our_user.email }}
         -- {{ our_user.phone_number }}<br>
     </td>
     </tr>
