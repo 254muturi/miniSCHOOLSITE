@@ -22,11 +22,11 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 admin = Admin()
-
 admin.init_app(app)
 
 
 # create a Model
+
 class Student(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     Class_Teacher = db.Column(db.String(100), nullable=False, unique=True)
@@ -36,42 +36,130 @@ class Student(db.Model, UserMixin):
     email = db.Column(db.String(100), nullable=False)
     phone_number = db.Column(db.String(100))
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
-
+ 
     def __repr__(self):
         return '<Name %r>' % self.name
 
 
-admin.add_view(ModelView(Student, db.session))
+# Define class names for different grades
+class Grade1Student(Student):
+    pass
 
 
-@app.route('/user/add', methods=['GET', 'POST'])
-def add_user():
+class Grade2Student(Student):
+    pass
+
+
+class Grade3Student(Student):
+    pass
+
+
+class Grade4Student(Student):
+    pass
+
+
+class Grade5Student(Student):
+    pass
+
+
+class Grade6Student(Student):
+    pass
+
+
+class Grade7Student(Student):
+    pass
+
+
+class Grade8Student(Student):
+    pass
+
+
+class GradePP1Student(Student):
+    pass
+
+
+class GradePP2Student(Student):
+    pass
+
+
+# dictionary to map grade names to class names
+GRADE_CLASSES = {
+    "Grade 1": Grade1Student,
+    "Grade 2": Grade2Student,
+    "Grade 3": Grade3Student,
+    "Grade 4": Grade4Student,
+    "Grade 5": Grade5Student,
+    "Grade 6": Grade6Student,
+    "Grade 7": Grade7Student,
+    "Grade 8": Grade8Student,
+    "Grade PP1": GradePP1Student,
+    "Grade PP2": GradePP2Student,
+    # Add more grades here
+}
+
+# Create instances dynamically based on grade names
+for grade_name, grade_class in GRADE_CLASSES.items():
+    globals()[grade_class.__name__] = type(
+        grade_class.__name__,
+        (Student,),
+        {"__tablename__": grade_name.lower() + "_students"}
+    )
+
+
+class SchoolDataBaseValidationForm(FlaskForm):
+    Class_Teacher = StringField(' Class Teacher ', validators=[DataRequired()])
+    name = StringField(' Student Name ', validators=[DataRequired()])
+    grade = StringField(' Grade ', validators=[DataRequired()])
+    parent_name = StringField(' Parent Name ', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired()])
+    phone_number = StringField("Phone Number", validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
+    # UPDATE DATABASE RECORD
+
+
+# ... (continue with the rest of your code)
+@app.route('/student/add', methods=['GET', 'POST'])
+def add_student():
     name = None
     form = SchoolDataBaseValidationForm()
     if form.validate_on_submit():
-        user_data = Student.query.filter_by(email=form.email.data).first()
+        try:
+            grade = form.grade.data
+            if grade in ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5',
+                         'Grade 6', 'Grade 7', 'Grade 8',
+                         'Grade PP1', 'Grade PP2']:
+                normalized_grade = grade.replace(' ', '').capitalize()
+                StudentClass = globals()[f"Grade{normalized_grade}Student"]
+                user_data = StudentClass(
+                    Class_Teacher=form.Class_Teacher.data,
+                    name=form.name.data,
+                    grade=form.grade.data,
+                    parent_name=form.parent_name.data,
+                    email=form.email.data,
+                    phone_number=form.phone_number.data
+                )
 
-        if user_data is None:
-            # PASSWORD HASHING
-            user_data = Student(Class_Teacher=form.Class_Teacher.data,
-                                name=form.name.data, grade=form.grade.data,
-                                parent_name=form.parent_name.data,
-                                email=form.email.data, phone_number=form.phone_number.data)
-            db.session.add(user_data)
-            db.session.commit()
+                # Save the data to the appropriate table
+                db.session.add(user_data)
+                db.session.commit()
 
-        name = form.name.data
-        form.Class_Teacher.data = ''
-        form.name.data = ''
-        form.grade.data = ''
-        form.parent_name.data = ''
-        form.email.data = ''
-        form.phone_number.data = ''
+                name = form.name.data
+                form.Class_Teacher.data = ''
+                form.name.data = ''
+                form.grade.data = ''
+                form.parent_name.data = ''
+                form.email.data = ''
+                form.phone_number.data = ''
 
-        flash("Student Added Successfully")
+                flash("Student Added Successfully")
+
+        except Exception as e:
+            print("Error:", e)
+            db.session.rollback()  # Rollback the transaction in case of error
+
     our_users = Student.query.order_by(Student.date_added)
-    return render_template("add_user.html", form=form, name=name, our_users=our_users)
-
+    return render_template("add_student.html", form=form, name=name, our_users=our_users)
 
 
 @app.route('/delete/<int:id>')
@@ -84,28 +172,13 @@ def delete(id):
         db.session.commit()
         flash("Student Deleted Successfully")
         our_users = Student.query.order_by(Student.date_added)
-        return render_template("add_user.html", form=form, name=name, our_users=our_users)
+        return render_template("add_student.html", form=form, name=name, our_users=our_users)
 
 
     except:
         flash("Student Not Deleted Successfully")
         our_users = Student.query.order_by(Student.date_added)
-        return render_template("add_user.html", form=form, name=name, our_users=our_users)
-
-
-class SchoolDataBaseValidationForm(FlaskForm):
-    Class_Teacher = StringField(' Class Teacher ', validators=[DataRequired()])
-    password_hash = PasswordField('Password',
-                                  validators=[DataRequired(), EqualTo('Password_hash2', message='Password Must Match')])
-    password_hash2 = PasswordField('Confirm  Password', validators=[DataRequired()])
-    name = StringField(' Name ', validators=[DataRequired()])
-    grade = StringField(' Class ', validators=[DataRequired()])
-    parent_name = StringField(' Parent Name ', validators=[DataRequired()])
-    email = StringField('Email', validators=[DataRequired()])
-    phone_number = StringField("Phone Number", validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
-    # UPDATE DATABASE RECORD
+        return render_template("add_student.html", form=form, name=name, our_users=our_users)
 
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
