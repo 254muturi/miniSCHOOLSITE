@@ -14,7 +14,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
 </head>
+
+
 <body>
+ <div class="preloader">
+        <div class="spinner"></div>
+    </div>
 <script src="https://cdn.jsdelivr.net/npm/mdb@5.3.0/dist/js/mdb.min.js"></script>
 
 <style>
@@ -34,6 +39,7 @@
 </style>
 <!---->
 <!---->
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-light mb-3 height:60px">
     <div class="container-fluid">
         <!-- Navbar brand/logo and toggle button -->
@@ -71,22 +77,27 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('how_to_help') }}">How To Help</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('admin') }}"></a>
-                </li>
+
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('add_student') }}">Database</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('name') }}"></a>
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('admin') }}"></a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('login') }}"></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('user',name='GATHURI') }}"></a>
                 </li>
+
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('name') }}"></a>
                 </li>
-
+<li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}"></a>
+                </li>
                 <li class="nav-item">
                 </li>
             </ul>
@@ -98,6 +109,7 @@
 <div class="container-fluid">
     <div class="row">
         <!---->
+
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             {% block content %}
             {% endblock %}

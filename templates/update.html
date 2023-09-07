@@ -8,7 +8,7 @@
 <ul class="flash">
     {% for message in messages %}
     <div class="alert alert-info alert-dismissible fade show" role="alert">
-    {{ name }} {{ message }}
+        {{ name }} {{ message }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
@@ -21,44 +21,64 @@
 {% else %}
 <h2>UPDATE STUDENT </h2>
 <br/>
-<div><form method="POST" action="/update/{{name_to_update.id}}">
-    {{ form.hidden_tag() }}
-    {{ form.name.label(class="form-label") }}
-    {{ form.name(class="form-control",value=name_to_update.name) }}
-    <br>
-     {{ form.grade.label(class="form-label") }}
-    {{ form.grade(class="form-control",value=name_to_update.grade) }}
-    {{ form.parent_name.label(class="form-label") }}
-    {{ form.parent_name(class="form-control",value=name_to_update.parent_name) }}
+<div>
+    <form method="POST" action="/update/{{name_to_update.id}}">
+        {{ form.hidden_tag() }}
+        {{ form.Class_Teacher.label(class="form-label") }}
+        {{ form.Class_Teacher(class="form-control",value=name_to_update.name) }}
+        <br>
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control",value=name_to_update.name) }}
+        <br>
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control",value=name_to_update.name) }}
+        <br>
+        {{ form.grade.label(class="form-label") }}
+        {{ form.grade(class="form-control",value=name_to_update.grade) }}
+        <br>
 
-    {{ form.email.label(class="form-label") }}
-    {{ form.email(class="form-control",value=name_to_update.email) }}
-    {{ form.phone_number.label(class="form-label") }}
-    {{ form.phone_number(class="form-control",value=name_to_update.phone_number) }}
+        {{ form.parent_name.label(class="form-label") }}
+        {{ form.parent_name(class="form-control",value=name_to_update.parent_name) }}
+        <br>
 
-   <br>
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control",value=name_to_update.email) }}
+        <br>
 
-    {{ form.submit(class="btn btn-secondary") }}
+        {{ form.phone_number.label(class="form-label") }}
+        {{ form.phone_number(class="form-control",value=name_to_update.phone_number) }}
+        <br>
 
-</form>
+        {{ form.amount_paid.label(class="form-label") }}
+        {{ form.amount_paid(class="form-control",value=name_to_update.phone_number) }}
+
+        <br>
+
+        {{ form.submit(class="btn btn-secondary") }}
+
+    </form>
 </div>
-    <br/>
+<br/>
 <br/>
 <br/>
 
 <table class="table table-hover table-bordered  table-striped">
-   {% for our_user in our_users %}
-     <tr>
+    {% for our_user in our_users %}
+    <tr>
 
-    <td>
- {{ our_user.id }}. {{ our_user.name }} -
-        {{ our_user.grade }}{{ our_user.parent_name }}
-        - {{ our_user.email }}
-        -- {{ our_user.phone_number }}<br>
-    </td>
+        <td>
+            {{ our_user.Class_Teacher }}
+            {{ our_user.username }}
+            {{ our_user.name }}
+            {{ our_user.grade }}
+            {{ our_user.parent_name }}
+            {{ our_user.email }}
+            {{ our_user.phone_number }}
+            {{ our_user.amount_paid }}<br>
+        </td>
     </tr>
 
-{% endfor %}
+    {% endfor %}
 </table>
 {% endif %}
 {% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flash">
+    {% for message in messages %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ name }} {{ message }}
+        <button role="button" tabindex="0" type="button" class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+
+<!-- Registration form  -->
+
+<h2>Login</h2>
+<br/>
+<div>
+    <form action='' method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control") }}
+        <br>
+        {{ form.password_hash.label(class="form-label") }}
+        {{ form.password_hash(class="form-control") }}
+        <br>
+
+        <br/>
+        {{ form.submit(class="btn btn-secondary") }}
+    </form>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+<!-- Table for all students with search -->
+
+<br>
+<br>
+{% endblock %}

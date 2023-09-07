@@ -2,6 +2,137 @@
 
 {% block content %}
 
-<h3>Admin Dashboard</h3>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flash">
+    {% for message in messages %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ name }} {{ message }}
+        <button role="button" tabindex="0" type="button" class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+{% if name %}
+<h2>Hello {{ name }}!!</h2>
+{% else %}
+<center>
+    <div><h2>Admin Dashboard</h2></div>
+</center>
+
+<!-- Registration form  -->
+
+<h2>STUDENT and PARENTS REGISTRATION FORM</h2>
+<br/>
+<div>
+    <form action='' method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.Class_Teacher.label(class="form-label") }}
+        {{ form.Class_Teacher(class="form-control") }}
+        <br>
+        <br>
+        {{ form.name.label(class="form-label") }}
+        {{ form.name(class="form-control") }}
+        <br/>
+        <br>
+        {{ form.grade.label(class="form-label") }}
+        {{ form.grade(class="form-control") }}
+        <br>
+        {{ form.parent_name.label(class="form-label") }}
+        {{ form.parent_name(class="form-control") }}
+        <br/>
+        <br>
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
+        <br>
+        {{ form.phone_number.label(class="form-label") }}
+        {{ form.phone_number(class="form-control") }}
+        <br>
+        {{ form.password_hash.label(class="form-label") }}
+        {{ form.password_hash(class="form-control") }}
+        <br>
+        {{ form.password_hash2.label(class="form-label") }}
+        {{ form.password_hash2(class="form-control") }}
+<!--        <br>-->
+<!--        {{ form.amount_paid.label(class="form-label") }}-->
+<!--        {{ form.amount_paid(class="form-control") }}-->
+
+        <br/>
+        {{ form.submit(class="btn btn-secondary") }}
+    </form>
+</div>
+<br/>
+<br/>
+<br/>
+<br/>
+<!-- Table for all students with search -->
+<h2>All Students and Parents Details</h2>
+<div class="form-group">
+    <input type="text" class="form-control" id="searchInput" placeholder="Search for a student">
+</div>
+<br>
+<br>
+<table class="table table-hover table-bordered table-striped">
+    <thead>
+    <tr>
+        <th scope="col">Date Added</th>
+        <th scope="col">Class Teacher</th>
+        <th scope="col">Student Name</th>
+        <th scope="col">Student Grade</th>
+        <th scope="col">Parent Name</th>
+        <th scope="col">Parent Email</th>
+        <th scope="col">Parent Phone Number</th>
+<!--        <th scope="col">Amount Paid</th>-->
+        <th scope="col">Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for our_user in our_users %}
+    <tr>
+        <th scope="row">{{ our_user.date_added }}</th>
+        <td>
+            <a href="{{ url_for('update', id=our_user.id) }}">
+                {{ our_user.Class_Teacher }}</a>
+        </td>
+        <td>{{ our_user.name }}</td>
+        <td>{{ our_user.grade }}</td>
+        <td>{{ our_user.parent_name }}</td>
+        <td>{{ our_user.email }}</td>
+        <td>{{ our_user.phone_number }}</td>
+<!--        <td>{{ our_user.amount_paid }}</td>-->
+
+        <td>
+            <a href="{{ url_for('delete', id=our_user.id) }}"
+               onclick="return confirm('Are you sure you want to delete this record?');">Delete</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+
+</table>
+
+
+<script>
+    // JavaScript function to filter table rows based on user input
+    document.getElementById("searchInput").addEventListener("input", function () {
+        const input = this.value.toLowerCase();
+        const rows = document.querySelectorAll("tbody tr");
+
+        rows.forEach(function (row) {
+            const name = row.querySelector("td:nth-child(3)").textContent.toLowerCase();
+            if (name.includes(input)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>
+
+{% endif %}
 
 {% endblock %}
