@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .custom-container {
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #131313;
+    }
+
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        max-width: 1200px; /* Adjust as needed */
+        margin: 20px; /* Added margin for better spacing */
+    }
+
+    .custom-container .card {
+        position: relative;
+        width: 320px;
+        max-width: 100%; /* Make the cards responsive */
+        height: 450px;
+        background: #131313;
+        border-radius: 20px;
+        overflow: hidden;
+        margin: 10px; /* Added margin for better spacing */
+    }
+
+
+    .custom-container .card:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #9bdc28;
+        clip-path: circle(150px at 80% 20%);
+        transition: 0.5s ease-in-out;
+    }
+
+    .custom-container .card:hover:before {
+        clip-path: circle(300px at 80% -20%);
+    }
+
+    .custom-container .card:after {
+        content: 'Nike';
+        position: absolute;
+        top: 30%;
+        left: -20%;
+        font-size: 12em;
+        font-weight: 800;
+        font-style: italic;
+        color: rgba(255, 255, 25, 0.05);
+    }
+
+    .custom-container .card .imgBx {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10000;
+        width: 100%;
+        height: 220px;
+        transition: 0.5s;
+    }
+
+    .custom-container .card:hover .imgBx {
+        top: 0%;
+        transform: translateY(0%);
+    }
+
+    .custom-container .card .imgBx img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-25deg);
+        width: 270px;
+    }
+
+    .custom-container .card .contentBx {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        height: 100px;
+        text-align: center;
+        transition: 1s;
+        z-index: 10;
+    }
+
+    .custom-container .card:hover .contentBx {
+        height: 210px;
+    }
+
+    .custom-container .card .contentBx h2 {
+        position: relative;
+        font-weight: 600;
+        letter-spacing: 1px;
+        color: #fff;
+        margin: 0;
+    }
+
+    .custom-container .card .contentBx .size,
+    .custom-container .card .contentBx .color {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 20px;
+        transition: 0.5s;
+        opacity: 0;
+        visibility: hidden;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    .custom-container .card:hover .contentBx .size {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.5s;
+    }
+
+    .custom-container .card:hover .contentBx .color {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.6s;
+    }
+
+    .custom-container .card .contentBx .size h3,
+    .custom-container .card .contentBx .color h3 {
+        color: #fff;
+        font-weight: 300;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-right: 10px;
+    }
+
+    .custom-container .card .contentBx .size span {
+        width: 26px;
+        height: 26px;
+        text-align: center;
+        line-height: 26px;
+        font-size: 14px;
+        display: inline-block;
+        color: #007bff;
+        background: #fff;
+        margin: 0 5px;
+        transition: 0.5s;
+        color: #111;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .custom-container .card .contentBx .size span:hover {
+        background: #9bdc28;
+    }
+
+    .custom-container .card .contentBx .color span {
+        width: 20px;
+        height: 20px;
+        background: #ff0;
+        border-radius: 50%;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+
+    .custom-container .card .contentBx .color span:nth-child(2) {
+        background: #9bdc28;
+    }
+
+    .custom-container .card .contentBx .color span:nth-child(3) {
+        background: #03a9f4;
+    }
+
+    .custom-container .card .contentBx .color span:nth-child(4) {
+        background: #e91e63;
+    }
+
+    .custom-container .card .contentBx a {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #fff;
+        border-radius: 4px;
+        margin-top: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        color: #000;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: 0.5s;
+        margin-top: 0;
+    }
+
+    .custom-container .card:hover .contentBx a {
+        opacity: 1;
+        transform: translateY(0px);
+        transition-delay: 0.75s;
+    }
+</style>
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+<!-- Bootstrap core CSS -->
+<link href="../css/bootstrap.min.css" rel="stylesheet">
+<!-- Material Design Bootstrap -->
+<link href="../css/mdb.min.css" rel="stylesheet">
+<!-- Intro Section -->
+<div class="view jarallax" data-jarallax='{"speed": 0.2}'
+     style="background-image: url(https://mdbootstrap.com/img/Photos/Others/model-3.jpg); background-repeat: no-repeat; background-size: cover; background-position: center center;">
+    <div class="mask rgba-white-light">
+        <div class="container h-100 d-flex justify-content-center align-items-center vh-100">
+            <div class="row pt-5 mt-3">
+                <div class="col-md-12 mb-3">
+                    <div class="intro-info-content text-center">
+                        <h1 class="display-3 mb-2 wow fadeInDown" data-wow-delay="0.3s">STATIONARY
+                            <a class="indigo-text font-weight-bold">COLLECTION</a>
+                        </h1>
+                        <h5 class="text-uppercase mb-5 mt-1 font-weight-bold wow fadeInDown" data-wow-delay="0.3s">
+                            Free
+                            delivery & special prices</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="intro-info-content text-center">
+    <div class="text-center">
+        <h1 class="display-3 mb-2 wow fadeInDown" data-wow-delay="0.3s">NEW
+            <a class="indigo-text font-weight-bold">COLLECTION</a>
+        </h1>
+        <h5 class="text-uppercase mb-5 mt-1 font-weight-bold wow fadeInDown" data-wow-delay="0.3s">
+            Free delivery & special prices</h5>
+    </div>
+</div>
+<div class="custom-container">
+    <div class="card-container">
+        <!-- Define a list of cards with their properties -->
+        {% set set_cards = [
+        {
+        'title': 'Nike Shoes 1',
+        'size': ['7', '8', '9', '10'],
+        'colors': ['Red', 'Blue', 'Green'],
+        'image_url': 'URL_TO_IMAGE_1'
+        },
+        {
+        'title': 'Nike Shoes 2',
+        'size': ['6', '7', '8', '9'],
+        'colors': ['Black', 'White', 'Gray'],
+        'image_url': 'URL_TO_IMAGE_2'
+        },
+        {
+        'title': 'Nike Shoes 3',
+        'size': ['8', '9', '10', '11'],
+        'colors': ['Yellow', 'Orange', 'Purple'],
+        'image_url': 'URL_TO_IMAGE_3'
+        },
+        {
+        'title': 'Nike Shoes 4',
+        'size': ['7', '8', '9', '10'],
+        'colors': ['Red', 'Blue', 'Green'],
+        'image_url': 'URL_TO_IMAGE_4'
+        },
+        {
+        'title': 'Nike Shoes 5',
+        'size': ['6', '7', '8', '9'],
+        'colors': ['Black', 'White', 'Gray'],
+        'image_url': 'URL_TO_IMAGE_5'
+        },
+        {
+        'title': 'Nike Shoes 6',
+        'size': ['8', '9', '10', '11'],
+        'colors': ['Yellow', 'Orange', 'Purple'],
+        'image_url': 'URL_TO_IMAGE_6'
+        }
+        ] %}
+
+        <div class="row mb-4">
+            {% for card in set_cards %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="contentBx">
+                        <h2>{{ card.title }}</h2>
+                        <div class="size">
+                            <h3>Size :</h3>
+                            {% for size in card.size %}
+                            <span>{{ size }}</span>
+                            {% endfor %}
+                        </div>
+                        <div class="color">
+                            <h3>Color :</h3>
+                            {% for color in card.colors %}
+                            <span>{{ color }}</span>
+                            {% endfor %}
+                        </div>
+                        <a href="#">Buy Now</a>
+                    </div>
+                    <div class="imgBx">
+                        <img src="{{ card.image_url }}">
+                    </div>
+                </div>
+            </div>
+            {% if loop.index % 3 == 0 %}
+        </div>
+        <div class="row mb-4">
+            {% endif %}
+            {% endfor %}
+        </div>
+        <!-- End of loop -->
+    </div>
+</div>
+
+
+<div class="intro-info-content text-center">
+    <div class="text-center">
+        <h1 class="display-3 mb-2 wow fadeInDown" data-wow-delay="0.3s">Exercise Book
+            <a class="indigo-text font-weight-bold">COLLECTION</a>
+        </h1>
+        <h5 class="text-uppercase mb-5 mt-1 font-weight-bold wow fadeInDown" data-wow-delay="0.3s">
+            Free delivery & special prices</h5>
+    </div>
+</div>
+<div class="custom-container">
+    <div class="card-container">
+        <!-- Define a list of cards with their properties -->
+
+        {% set set_cards = [
+        {
+        'title': 'Exercise Book',
+        'Pages': ['200'],
+        'image_url': url_for('static', filename='images/skoolKids.jpeg')
+        },
+        {
+        'title': 'Exercise Book',
+        'Pages': ['120'],
+        'image_url': url_for('static', filename='images/KARTASI01EXC1009-40402.jpg')
+        },
+        {
+        'title': 'Exercise Book',
+        'Pages': ['96'],
+        'image_url':url_for('static', filename='images/img.png') },
+        {
+        'title': 'Exercise Book',
+        'Pages': ['64'],
+
+        'image_url': 'URL_TO_IMAGE_4'
+        },
+        {
+        'title': 'Exercise Book',
+        'Pages': ['48'],
+        'image_url': 'URL_TO_IMAGE_5'
+        },
+        {
+        'title': 'Exercise Book',
+        'Pages': [32],
+        'image_url': 'URL_TO_IMAGE_6'
+        }
+        ] %}
+
+        <div class="row mb-4">
+            {% for card in set_cards %}
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="contentBx">
+                        <h2>{{ card.title }}</h2>
+                        <div class="size">
+                            <h3>Pages :</h3>
+                            {% for pages in card.pages %}
+                            <span>{{ pages }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <a href="#">Buy Now</a>
+                    </div>
+                    <div class="imgBx">
+                        <img src="{{ card.image_url }}">
+                    </div>
+                </div>
+            </div>
+            {% if loop.index % 3 == 0 %}
+        </div>
+        <div class="row mb-4">
+            {% endif %}
+            {% endfor %}
+        </div>
+        <!-- End of loop -->
+    </div>
+</div>
+
+{% endblock %}
+

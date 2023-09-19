@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -29,7 +30,7 @@
     }
 
     .navbar-dark .navbar-nav .nav-link {
-        font-size: 22px; /* You can adjust the font size as per your preference */
+        font-size: 22px;
         font-weight: bold;
     }
 
@@ -37,8 +38,8 @@
         color: lightblue;
     }
 </style>
-<!---->
-<!---->
+
+
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-light mb-3 height:60px">
     <div class="container-fluid">
@@ -77,16 +78,18 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('how_to_help') }}">How To Help</a>
                 </li>
-
+                {% if current_user.username == marto %}
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('add_student') }}">Database</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('admin') }}"></a>
-                </li>
+                {% endif %}
+
 
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="{{ url_for('login') }}"></a>
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('login') }}">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('shop') }}">Shop</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('user',name='GATHURI') }}"></a>
@@ -106,16 +109,14 @@
     <!---->
 </nav>
 <!---->
-<div class="container-fluid">
-    <div class="row">
-        <!---->
-
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            {% block content %}
-            {% endblock %}
-        </main>
+ <div class="container-fluid">
+        <div class="row">
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mx-auto"> <!-- Added mx-auto class -->
+                {% block content %}
+                {% endblock %}
+            </main>
+        </div>
     </div>
-</div>
 <!-- Footer -->
 <!-- Footer -->
 <footer class="text-center text-lg-start bg-white text-muted">
@@ -241,12 +242,22 @@
 </footer>
 <!-- Footer -->
 <!-- Footer -->
-<!-- Add this script at the end of your body tag -->
-<!---->
+
+<!-- Add Bootstrap JS and MDB JS scripts here -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.2/js/mdb.min.js"></script>
+
+<!-- Initialize tooltips -->
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-        crossorigin="anonymous"></script>
-<!---->
+            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+            crossorigin="anonymous"></script>
 </body>
 <script>
 </script>
