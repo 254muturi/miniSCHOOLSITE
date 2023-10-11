@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flash">
+    {% for message in messages %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button role="button" tabindex="0" type="button" class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+<h2>FADHILI SHOP PRODUCTS</h2>
+<br/>
+<div>
+    <form action='' method="POST">
+        {{ form.csrf_token }}
+        <div class="form-group">
+            {{ form.title.label(class="form-label") }}
+            {{ form.title(class="form-control") }}
+        </div>
+        <div class="form-group">
+            {{ form.pages.label(class="form-label") }}
+            {{ form.pages(class="form-control") }}
+        </div>
+        <!--product price-->
+        <div class="form-group">
+            {{ form.price.label(class="form-label") }}
+            {{ form.price(class="form-control") }}
+        </div>
+        <!--product description-->
+        <div class="form-group">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control") }}
+        </div>
+        <br>
+
+        {{ form.submit(class="btn btn-secondary") }}
+
+    </form>
+</div>
+
+
+<!-- Add some spacing here if needed -->
+<br>
+<br>
+<br>
+<br>
+<br>
+<h2>All PRODUCTS Details</h2>
+<div class="form-group">
+    <input type="text" class="form-control" id="searchInput" placeholder="Search for a PRODUCT">
+</div>
+
+<!-- Add more spacing here if needed -->
+
+<table class="table table-hover table-bordered table-striped">
+    <thead>
+    <tr>
+        <th scope="col">Product ID</th>
+        <th scope="col">Product Name</th>
+        <th scope="col">Product Quantity</th>
+        <th scope="col">Product Price</th>
+        <th scope="col">Product Description</th>
+        <th scope="col">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for our_product in our_products %}
+    <!-- Inside the loop for displaying products -->
+    <tr>
+        <td>{{ our_product.id }}</td>
+        <td>{{ our_product.title }}</td>
+        <td>
+            <a href="{{ url_for('update_product', id=our_product.id) }}">
+                {{ our_product.pages }}</a>
+        </td>
+        <td>{{ our_product.price }}</td>
+        <td>{{ our_product.description }}</td>
+        <td>
+            <form action="{{ url_for('delete_product', id=our_product.id) }}" method="post"
+                  onsubmit="return confirm('Are you sure you want to delete this product?');">
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+        </td>
+        <td>
+            <a href="{{ url_for('update_product', id=our_product.id) }}" class="btn btn-primary">Update</a>
+        </td>
+
+    </tr>
+
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+<script>
+    const addToCartButtons = document.querySelectorAll('.add-to-cart');
+    const cartItemsList = document.getElementById('cart-items');
+    const cartTotal = document.getElementById('cart-total');
+
+    // Cart data (an array to store selected items)
+    const cart = [];
+
+    // Function to update the cart display
+    function updateCart() {
+        // Clear the cart display
+        cartItemsList.innerHTML = '';
+
+        // Initialize the total price
+        let totalPrice = 0;
+
+        // Loop through the cart items and add them to the display
+        cart.forEach(item => {
+            const cartItem = document.createElement('li');
+            cartItem.textContent = `Variant: ${item.variantId}, Quantity: ${item.quantity}`;
+            cartItemsList.appendChild(cartItem);
+
+            // Calculate the price for this item and add it to the total
+            const variant = product.variants.find(variant => variant.id === item.variantId);
+            if (variant) {
+                const itemPrice = variant.price * item.quantity;
+                totalPrice += itemPrice;
+            }
+        });
+
+        // Update the cart total
+        cartTotal.textContent = `$${totalPrice.toFixed(2)}`;
+    }
+
+    // Add a click event listener to the "Pay Now" button
+    const payNowButton = document.getElementById('pay-now-button');
+    payNowButton.addEventListener('click', () => {
+        const totalPrice = parseFloat(totalPriceElement.textContent);
+        const phoneNumber = prompt('Enter your M-Pesa phone number:');
+
+        if (phoneNumber) {
+            const paymentMessage = `You will receive an M-Pesa payment request for $${totalPrice.toFixed(2)} on ${phoneNumber}.`;
+            alert(paymentMessage);
+        } else {
+            alert('Payment cancelled.');
+        }
+    });
+
+
+    // Add a click event listener to each "Add to Cart" button
+    addToCartButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const variantId = button.getAttribute('data-variant-id');
+            const quantityInput = document.getElementById(`quantity-${variantId}`);
+            const quantity = parseInt(quantityInput.value);
+
+            // Check if the variant is already in the cart
+            const existingItem = cart.find(item => item.variantId === variantId);
+
+            if (existingItem) {
+                // If it exists, update the quantity
+                existingItem.quantity += quantity;
+            } else {
+                // If it doesn't exist, add a new item to the cart
+                cart.push({variantId, quantity});
+            }
+
+            // Clear the quantity input
+            quantityInput.value = '1';
+
+            // Update the cart display
+            updateCart();
+        });
+    });
+</script>
+
+</body>
+</html>
+{% endblock %}

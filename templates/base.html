@@ -1,9 +1,10 @@
-
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Fadhili Foundation</title>
+    <!-- Add this code inside the <head> section of your base.html -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -18,9 +19,9 @@
 
 
 <body>
- <div class="preloader">
-        <div class="spinner"></div>
-    </div>
+<div class="preloader">
+    <div class="spinner"></div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/mdb@5.3.0/dist/js/mdb.min.js"></script>
 
 <style>
@@ -36,12 +37,18 @@
 
     .container {
         color: lightblue;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .navbar {
+        position: sticky;
+        top: 0;
     }
 </style>
 
 
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-light mb-3 height:60px">
+<nav class="navbar navbar-expand-lg navbar-dark bg-light mb-3 mt-1 height:60px">
     <div class="container-fluid">
         <!-- Navbar brand/logo and toggle button -->
         <a class="navbar-brand" href="{{ url_for('index') }}">Fadhili</a>
@@ -91,6 +98,9 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('shop') }}">Shop</a>
                 </li>
+                  <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="{{ url_for('add_products') }}">THE STORE</a>
+                </li>
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('user',name='GATHURI') }}"></a>
                 </li>
@@ -98,7 +108,7 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('name') }}"></a>
                 </li>
-<li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="{{ url_for('dashboard') }}"></a>
                 </li>
                 <li class="nav-item">
@@ -109,14 +119,14 @@
     <!---->
 </nav>
 <!---->
- <div class="container-fluid">
-        <div class="row">
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 mx-auto"> <!-- Added mx-auto class -->
-                {% block content %}
-                {% endblock %}
-            </main>
-        </div>
+<div class="container-fluid">
+    <div class="row">
+        <main class=""> <!-- Added mx-auto class -->
+            {% block content %}
+            {% endblock %}
+        </main>
     </div>
+</div>
 <!-- Footer -->
 <!-- Footer -->
 <footer class="text-center text-lg-start bg-white text-muted">
@@ -256,8 +266,8 @@
     });
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-            integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
-            crossorigin="anonymous"></script>
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
 </body>
 <script>
 </script>

@@ -1,7 +1,6 @@
 from flask import request
 from shop_products import *
 from sqlalchemy.orm import session
-import os
 from datetime import datetime
 from flask_admin import Admin
 from flask_wtf import FlaskForm
@@ -11,8 +10,6 @@ from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 from flask_admin.contrib.sqla import ModelView
-# from flask_uploads import UploadSet, configure_uploads, IMAGES
-# from flask_uploads import UploadSet, IMAGES, configure_uploads
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, EqualTo, Length
 from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
@@ -57,6 +54,24 @@ def load_user(user_id):
     except Exception as e:
         # Handle exceptions gracefully (e.g., log the error)
         return None
+
+
+class Product(db.Model):
+    __tablename__ = 'product'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    pages = db.Column(db.String, nullable=False)
+    price = db.Column(db.String(20), nullable=False)
+    description = db.Column(db.String(500))
+
+
+class ProductsForm(FlaskForm):
+    title = StringField('Product Name', validators=[DataRequired()])
+    pages = StringField('Quantity', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
+    price = DecimalField('Price', validators=[DataRequired()])
+    submit = SubmitField("Submit")
 
 
 # create a Model
@@ -306,7 +321,43 @@ def delete(id):
                                GRADE_CLASSES=GRADE_CLASSES)
 
 
-@app.route('/update/<int:id>', methods=['GET', 'POST'])
+# Your Flask route for product deletion
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_product(id):
+    product = Product.query.get(id)
+    if product:
+        db.session.delete(product)
+        db.session.commit()
+        flash('Product deleted successfully', 'success')
+    else:
+        flash('Product not found', 'error')
+    return redirect(url_for('add_products'))  # Redirect to the products page
+
+# Flask route for updating a product
+@app.route('/update_product/<int:id>', methods=['GET', 'POST'])
+def update_product(id):
+    form=ProductsForm
+    product = Product.query.get(id)
+
+    if request.method == 'POST':
+        # Handle the form submission to update the product
+        new_title = request.form['new_title']
+        new_price = request.form['new_price']
+        new_description = request.form['new_description']
+
+        # Update the product fields
+        product.title = new_title
+        product.price = new_price
+        product.description = new_description
+
+        db.session.commit()
+        flash('Product updated successfully', 'success')
+        return redirect(url_for('add_products'))
+
+    return render_template('update_product.html', product=product, form=form)
+
+
+#
 @login_required
 def update(id):
     form = SchoolDataBaseValidationForm()
@@ -492,7 +543,6 @@ def admin():
     return render_template('admin.html', form=form)
 
 
-
 # Define a route to add items to the cart
 @app.route('/cart', methods=['POST'])
 def add_to_basket():
@@ -509,13 +559,59 @@ def add_to_basket():
 # Define a route to display the cart content
 @app.route('/cart')
 def cart():
-    total_price = sum(float(item['price']) for item in cart)
+    # Retrieve the cart data from wherever you're storing it
+    # For simplicity, I'm using a list here; you may use a database or session.
+    cart = [
+        {'name': 'Exercise Book 1', 'price': 250.00},
+        {'name': 'Exercise Book 2', 'price': 250.00},
+        {'name': 'Exercise Book 1', 'price': 250.00},
+        {'name': 'Exercise Book 2', 'price': 250.00},
+        {'name': 'Exercise Book 1', 'price': 250.00},
+        {'name': 'Exercise Book 2', 'price': 250.00},
+        {'name': 'Exercise Book 1', 'price': 250.00},
+        {'name': 'Exercise Book 2', 'price': 250.00},
+        {'name': 'Exercise Book 1', 'price': 250.00},
+        {'name': 'Exercise Book 2', 'price': 250.00},
+
+        # Add more items as needed
+    ]
+
+    # Calculate the total price
+    total_price = sum(item['price'] for item in cart)
+
     return render_template('cart.html', cart=cart, total_price=total_price)
 
 
 @app.route('/shop')
 def shop():
     return render_template('shop.html')
+
+
+@app.route('/add_products', methods=['GET', 'POST'])
+def add_products():
+    form = ProductsForm()
+    if form.validate_on_submit():
+        product = Product(
+            title=form.title.data,
+            pages=form.pages.data,
+            price=form.price.data,
+            description=form.description.data,
+        )
+
+        # CLEAR FORM
+        form.title.data = ''
+        form.pages.data = ''
+        form.price.data = ''
+        form.description.data = ''
+
+        # ADD PRODUCT TO DATABASE
+        db.session.add(product)
+        db.session.commit()
+        flash("Product added Successfully")
+
+    our_products = Product.query.order_by(Product.title.asc()).all()
+    return render_template("add_products.html", form=form, our_products=our_products)
+    return redirect(url_for('add_products.html'))
 
 
 @app.errorhandler(404)
@@ -551,138 +647,3 @@ def create_db():
 if __name__ == '__main__':
     create_db()
     app.run(debug=True, port=5002)
-
-# <!DOCTYPE html>
-# <html>
-# <head>
-#     <title>{{ product.name }} Details</title>
-#     <!-- Include Bootstrap CSS -->
-#     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-# </head>
-# <body>
-# <h1>{{ product.name }} Details</h1>
-# <p>{{ product.description }}</p>
-#
-# <div id="selected-variant">
-# </div>
-#
-# <!-- Cart Container -->
-# <div id="cart-container">
-#     <h2>Shopping Cart</h2>
-#     <ul id="cart-items">
-#         <!-- Cart items will be displayed here -->
-#     </ul>
-#     <p>Total Price: $<span id="total-price">0.00</span></p>
-#     <button id="checkout-button" class="btn btn-primary">Checkout</button>
-# </div>
-# <br>
-#
-# <form action="/add_to_cart" method="post">
-#     <div class="row" id="variant-cards">
-#         {% for variant in product.variants %}
-#         <div class="col-md-4">
-#             <div class="card mb-4" id="variant-card-{{ variant.id }}">
-#                 <img src="{{ variant.images[0] }}" class="card-img-top"
-#                      alt="{{ variant.id }} - {{ variant.images[0] }}">
-#                 <div class="card-body">
-#                     <h5 class="card-title">Variant: {{ variant.id }}</h5>
-#                     <p class="card-text">Size: {{ variant.size }}</p>
-#                     <p class="card-text">Color: {{ variant.color }}</p>
-#                     <p class="card-text">Price: ${{ variant.price }}</p>
-#                     <div class="form-group">
-#                         <label for="quantity-{{ variant.id }}">Quantity:</label>
-#                         <input type="number" class="form-control" id="quantity-{{ variant.id }}" name="quantity"
-#                                value="1" min="1">
-#                     </div>
-#                 </div>
-#                 <div class="card-footer">
-#                     <a href="#" class="btn btn-primary btn-block">Buy Now</a>
-#                     <button type="button" class="btn btn-primary btn-block add-to-cart"
-#                             data-variant-id="{{ variant.id }}">Add to Cart
-#                     </button>
-#                 </div>
-#             </div>
-#         </div>
-#         {% endfor %}
-#     </div>
-# </form>
-#
-# <script>
-#
-#     // JavaScript to update selected variant information and images
-#     const variantInputs = document.querySelectorAll('.add-to-cart');
-#     const selectedVariantDiv = document.getElementById('selected-variant');
-#     const variantCardsDiv = document.getElementById('variant-cards');
-#     const product = JSON.parse('{{ product | tojson | safe }}');
-#
-#     variantInputs.forEach(input => {
-#         input.addEventListener('click', (event) => {
-#             const variantId = event.currentTarget.getAttribute('data-variant-id');
-#             const quantityInput = document.getElementById(`quantity-${variantId}`);
-#             const quantity = parseInt(quantityInput.value);
-#
-#             const selectedVariant = product.variants.find(variant => variant.id === variantId);
-#
-#             if (selectedVariant) {
-#                 const price = selectedVariant.price;
-#
-#                 // Check if the variant is already in the cart
-#                 const existingItem = cart.find(item => item.variantId === variantId);
-#
-#                 if (existingItem) {
-#                     // If it exists, update the quantity and price
-#                     existingItem.quantity += quantity;
-#                 } else {
-#                     // If it doesn't exist, add a new item to the cart
-#                     cart.push({ variantId, quantity, price });
-#                 }
-#
-#                 // Clear the quantity input
-#                 quantityInput.value = '1';
-#
-#                 // Update the cart display
-#                 updateCart();
-#             }
-#         });
-#     });
-#
-#     // Cart data (an array to store selected items)
-#     const cart = [];
-#
-#     // Function to update the cart display
-#     function updateCart() {
-#         // Clear the cart display
-#         cartItemsList.innerHTML = '';
-#
-#         let totalPrice = 0;
-#
-#         // Loop through the cart items and add them to the display
-#         cart.forEach(item => {
-#             const cartItem = document.createElement('li');
-#             cartItem.textContent = `Variant: ${item.variantId}, Quantity: ${item.quantity}, Price: $${(item.price * item.quantity).toFixed(2)}`;
-#             cartItemsList.appendChild(cartItem);
-#
-#             // Calculate and update the total price
-#             totalPrice += item.price * item.quantity;
-#         });
-#
-#         // Update the total price display
-#         totalPriceElement.textContent = totalPrice.toFixed(2);
-#     }
-#
-#     // Add a click event listener to the "Checkout" button
-#     const checkoutButton = document.getElementById('checkout-button');
-#     checkoutButton.addEventListener('click', () => {
-#         // You can implement the checkout logic here
-#         alert('Checkout functionality is not implemented in this example.');
-#     });
-#
-#     // Cart items list and total price element
-#     const cartItemsList = document.getElementById('cart-items');
-#     const totalPriceElement = document.getElementById('total-price');
-# </script>
-#
-# <!-- Include Bootstrap JS (optional) -->
-# <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-# </body>
-# </html>
