@@ -1,3 +1,8 @@
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, DecimalField
+from wtforms.validators import DataRequired
+from flask_wtf.file import FileField, FileAllowed, FileRequired
+
 from flask import request
 from shop_products import *
 from sqlalchemy.orm import session
@@ -5,6 +10,8 @@ from datetime import datetime
 from flask_admin import Admin
 from flask_wtf import FlaskForm
 from flask_migrate import Migrate
+from flask_mysqldb import MySQL
+
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
@@ -41,6 +48,9 @@ migrate = Migrate(app, db)
 admin = Admin()
 admin.init_app(app)
 
+# Initialize MySQL
+mysql = MySQL(app)
+
 # FLASK LOGIN MANENOZ
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -61,16 +71,19 @@ class Product(db.Model):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
-    pages = db.Column(db.String, nullable=False)
+    pages = db.Column(db.String(25), nullable=False)
     price = db.Column(db.String(20), nullable=False)
+    image_url = db.Column(db.String(255), nullable=False)  # Specify a length for VARCHAR, e.g., 255
     description = db.Column(db.String(500))
 
 
 class ProductsForm(FlaskForm):
     title = StringField('Product Name', validators=[DataRequired()])
-    pages = StringField('Quantity', validators=[DataRequired()])
-    description = StringField('Description', validators=[DataRequired()])
+    quantity = StringField('Quantity', validators=[DataRequired()])
+    pages = StringField('Pages', validators=[DataRequired()])
     price = DecimalField('Price', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
+    image_url = FileField('Product Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Only images are allowed.')])
     submit = SubmitField("Submit")
 
 
@@ -321,41 +334,6 @@ def delete(id):
                                GRADE_CLASSES=GRADE_CLASSES)
 
 
-# Your Flask route for product deletion
-@app.route('/delete/<int:id>', methods=['POST'])
-def delete_product(id):
-    product = Product.query.get(id)
-    if product:
-        db.session.delete(product)
-        db.session.commit()
-        flash('Product deleted successfully', 'success')
-    else:
-        flash('Product not found', 'error')
-    return redirect(url_for('add_products'))  # Redirect to the products page
-
-# Flask route for updating a product
-@app.route('/update_product/<int:id>', methods=['GET', 'POST'])
-def update_product(id):
-    form=ProductsForm
-    product = Product.query.get(id)
-
-    if request.method == 'POST':
-        # Handle the form submission to update the product
-        new_title = request.form['new_title']
-        new_price = request.form['new_price']
-        new_description = request.form['new_description']
-
-        # Update the product fields
-        product.title = new_title
-        product.price = new_price
-        product.description = new_description
-
-        db.session.commit()
-        flash('Product updated successfully', 'success')
-        return redirect(url_for('add_products'))
-
-    return render_template('update_product.html', product=product, form=form)
-
 
 #
 @login_required
@@ -543,48 +521,58 @@ def admin():
     return render_template('admin.html', form=form)
 
 
-# Define a route to add items to the cart
-@app.route('/cart', methods=['POST'])
+@app.route('/add_to_basket', methods=['POST'])
 def add_to_basket():
-    product_name = request.form['product_name']
-    product_price = request.form['product_price']
+    if request.method == 'POST':
+        item_name = request.form['item_name']
+        price = float(request.form['price'])
 
-    # Add the item to the cart as a dictionary
-    cart_item = {'name': product_name, 'price': product_price}
-    cart.append(cart_item)
+        # Insert the item into the shopping cart table
+        cursor = mysql.connection.cursor()
+        cursor.execute("INSERT INTO shopping_cart (item_name, price, quantity) VALUES (%s, %s, 1)", (item_name, price))
+        mysql.connection.commit()
+        cursor.close()
 
-    return redirect(url_for('product_list'))
+        return redirect('/products')  # Redirect to the products page after adding an item
 
 
-# Define a route to display the cart content
 @app.route('/cart')
 def cart():
-    # Retrieve the cart data from wherever you're storing it
-    # For simplicity, I'm using a list here; you may use a database or session.
-    cart = [
-        {'name': 'Exercise Book 1', 'price': 250.00},
-        {'name': 'Exercise Book 2', 'price': 250.00},
-        {'name': 'Exercise Book 1', 'price': 250.00},
-        {'name': 'Exercise Book 2', 'price': 250.00},
-        {'name': 'Exercise Book 1', 'price': 250.00},
-        {'name': 'Exercise Book 2', 'price': 250.00},
-        {'name': 'Exercise Book 1', 'price': 250.00},
-        {'name': 'Exercise Book 2', 'price': 250.00},
-        {'name': 'Exercise Book 1', 'price': 250.00},
-        {'name': 'Exercise Book 2', 'price': 250.00},
+    try:
+        # Fetch cart items from the database
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT item_name, price, quantity FROM shopping_cart")
+        cart = cursor.fetchall()
+        cursor.close()
 
-        # Add more items as needed
-    ]
-
-    # Calculate the total price
-    total_price = sum(item['price'] for item in cart)
-
-    return render_template('cart.html', cart=cart, total_price=total_price)
+        return render_template('cart.html', cart=cart)
+    except Exception as e:
+        # Handle the error, e.g., print the error message for debugging
+        print(f"Error fetching cart items: {str(e)}")
+        # You can also redirect to an error page
+        return render_template('500.html')
 
 
-@app.route('/shop')
-def shop():
-    return render_template('shop.html')
+@app.route('/checkout')
+def checkout():
+    # Add checkout logic here
+    return render_template('checkout.html')
+
+@app.route('/shop/<int:product_id>')
+@app.route('/shop', defaults={'product_id': None})
+def shop(product_id):
+    if product_id is not None:
+        # Display the product detail for the given 'product_id'
+        product = Product.query.get(product_id)
+        if product:
+            return render_template('product_detail.html', product=product)
+        else:
+            # Handle the case where the product with the specified ID is not found.
+            return render_template('500.html')
+    else:
+        # Display a list of products
+        products = Product.query.all()
+        return render_template('shop.html', products=products)
 
 
 @app.route('/add_products', methods=['GET', 'POST'])
@@ -596,6 +584,8 @@ def add_products():
             pages=form.pages.data,
             price=form.price.data,
             description=form.description.data,
+            image_url=form.image_url.data  # Use the form field name
+
         )
 
         # CLEAR FORM
@@ -603,6 +593,7 @@ def add_products():
         form.pages.data = ''
         form.price.data = ''
         form.description.data = ''
+        form.image_url.data = ''
 
         # ADD PRODUCT TO DATABASE
         db.session.add(product)
@@ -614,12 +605,50 @@ def add_products():
     return redirect(url_for('add_products.html'))
 
 
+# Your Flask route for product deletion
+@app.route('/delete/<int:id>', methods=['POST'])
+def delete_product(id):
+    product = Product.query.get(id)
+    if product:
+        db.session.delete(product)
+        db.session.commit()
+        flash('Product deleted successfully', 'success')
+    else:
+        flash('Product not found', 'error')
+    return redirect(url_for('add_products'))  # Redirect to the products page
+
+
+# Flask route for updating a product
+@app.route('/update_product/<int:id>', methods=['GET', 'POST'])
+def update_product(id):
+    form = ProductsForm()  # Instantiate the form
+    product = Product.query.get(id)
+
+    if request.method == 'POST':
+        # Handle the form submission to update the product
+        new_title = request.form['new_title']
+        new_price = request.form['new_price']
+        new_pages = request.form['new_pages']
+        new_description = request.form['new_description']
+        image_url = request.form['image_url']  # Use request.form to access image_url
+        # Update the product fields
+        product.title = new_title
+        product.price = new_price
+        product.pages = new_pages
+        product.description = new_description
+        product.image = image_url
+
+        db.session.commit()
+        flash('Product updated successfully', 'success')
+        return redirect(url_for('add_products'))
+
+    return render_template('update_product.html', product=product, form=form)
+
+
 @app.errorhandler(404)
 def page_not_found(e):
     return render_template("404.html")
 
-
-#
 
 # Define a Product model with an image field
 

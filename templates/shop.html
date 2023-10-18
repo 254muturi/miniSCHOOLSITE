@@ -160,7 +160,7 @@
 
         .card .contentBx {
             position: absolute;
-            bottom: -65px;
+            bottom: -35px;
             width: 100%;
             height: 100px;
             text-align: center;
@@ -190,7 +190,7 @@
             opacity: 0;
             visibility: hidden;
             padding-top: 0;
-            padding-bottom: 0;
+            padding-bottom: 5px;
         }
 
         .card:hover .contentBx .size {
@@ -260,14 +260,14 @@
             padding: 10px 20px;
             background: #fff;
             border-radius: 4px;
-            margin-top: 10px;
+            margin-top: 0px;
             text-decoration: none;
             font-weight: 600;
             color: #000;
             opacity: 0;
             transform: translateY(50px);
             transition: 0.5s;
-            margin-top: 0;
+
         }
 
         .card:hover .contentBx a {
@@ -356,346 +356,46 @@
 </div>
 <!-- Jarallax JavaScript (if not already included in your project) -->
 <script src="path/to/jarallax.min.js"></script>
-
 <div class="intro-info-content text-center">
     <div class="text-center">
-
         <h5 class="text-uppercase mt-5 mb-5 mt-1 font-weight-bold wow fadeInDown" data-wow-delay="0.3s">
-            SCHOOL UNIFORMS</h5>
+            SCHOOL STATIONARIES
+        </h5>
     </div>
 </div>
+<div class="card-container">
+    {% for product in products %}
+    <div class="card">
+        <!-- Display a single image for each product -->
+        <div class="imgBx">
+            <img src="{{ url_for('static', filename='images/' ~ product.title ~ '.img_1.png') }}" class="d-block w-100"
+                 alt="{{ product.title }} Image">
+        </div>
 
-<div class="custom-container">
-    <div class="card-container">
-        <!-- Define a list of cards with their properties -->
+        <!-- Card content below the product image -->
+        <div class="contentBx">
+            <h1>{{ product.title }}</h1>
+            <p style="color: #f0f0f0">Price: Ksh {{ product.price }}</p>
+            <p style="color: #f0f0f0">Description: {{ product.description }}</p>
 
-        {% set set_cards = [
+            <!-- Wrap the buttons in a div for side-by-side display -->
+            <div class="button-container">
+                <!-- "Buy Now" button that links to the cart.html page -->
+                <a href="{{ url_for('cart') }}" class="btn btn-primary">Buy Now</a>
 
-        {
-        'title': 'Exercise Book 1',
-        'pages': ['200'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book 2',
-        'pages': ['120'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/KARTASI01EXC1009-40402.jpg')
-        },
-        {
-        'title': 'Exercise Book 3',
-        'pages': ['96'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book 4',
-        'pages': ['200'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book 5',
-        'pages': ['120'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/KARTASI01EXC1009-40402.jpg')
-        },
-        {
-        'title': 'Exercise Book 6',
-        'pages': ['96'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book 7',
-        'pages': ['64'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png') },
-        {
-        'title': 'Exercise Book 8',
-        'pages': ['48'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png') },
-        {
-        'title': 'Exercise Book 9',
-        'pages': [32],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png') },
-
-        {
-        'title': 'Boys Shorts ',
-        'pages': ['200'],
-        'price': 'Ksh 123.00',
-        'image_url': url_for('static', filename='images/img_4.png')
-        },
-        {
-        'title': 'Girls Scout Dress',
-        'pages': ['120'],
-        'price': 'Ksh 123.00',
-        'image_url': url_for('static', filename='images/img_3.png')
-        },
-        {
-        'title': 'Boys Trouser',
-        'pages': ['96'],
-        'price': 'Ksh 123.00',
-        'image_url': url_for('static', filename='images/img_2.png')
-        },
-        {
-        'title': 'Girls Dress',
-        'pages': ['64'],
-        'price': 'Ksh 123.00',
-        'image_url': url_for('static', filename='images/img_5.png')
-        },
-        {
-        'title': ' Sweeter',
-        'pages': ['48'],
-        'price': 'Ksh 123.00',
-        'image_url': url_for('static', filename='images/img_6.png')
-        },
-        {
-        'title': 'Exercise Book 6',
-        'pages': [32],
-        'price': 'Ksh 123.00',
-
-        'image_url': url_for('static', filename='images/img.png')
-        }
-        ] %}
-
-
-        <div class="row mb-4">
-            {% for card in set_cards %}
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="contentBx">
-                        <h2>{{ card.title }}</h2>
-
-                        <div class="price">
-                            <h6>Price: {{ card.price }}</h6></div>
-                        <a href="#">Buy Now</a>
-                        <button type="button" class="btn btn-success mt-1 add-to-basket"
-                                data-product-name="{{ card.title }}" data-product-price="{{ card.price }}"
-                                data-toggle="modal" data-target="#productModal"
-                                onclick="addToCart('{{ card.title }}', '{{ card.price }}')">
-                            Add to Basket
-                        </button>
-
-                    </div>
-
-                    <div class="imgBx">
-                        <img src="{{ card.image_url }}">
-                    </div>
-                </div>
+                <!-- "Add to Cart" button that also links to the cart.html page -->
+                <a href="{{ url_for('cart') }}" class="btn btn-secondary">Add to Cart</a>
             </div>
-            {% if loop.index % 3 == 0 %}
         </div>
-        <div class="row mb-4">
-            {% endif %}
-            {% endfor %}
-        </div>
-        <!-- End of loop -->
     </div>
+    {% if loop.index % 3 == 0 %}
+</div>
+<div class="card-container">
+    {% endif %}
+    {% endfor %}
 </div>
 
 
-<div class="intro-info-content text-center">
-    <div class="text-center">
-        <h1 class="display-3 mb-2 wow fadeInDown" data-wow-delay="0.3s">Stationary
-            <a class="indigo-text font-weight-bold">COLLECTION</a>
-        </h1>
-        <h5 class="text-uppercase mb-5 mt-1 font-weight-bold wow fadeInDown" data-wow-delay="0.3s">
-            Free delivery & special prices</h5>
-    </div>
-</div>
-
-
-<div class="custom-container">
-    <div class="card-container">
-        <!-- Define a list of cards with their properties -->
-
-        {% set set_cards = [
-        {
-        'title': 'Oxford Set',
-        'pages': ['200'],
-        'price': 'Ksh 10000.00',
-        'image_url': url_for('static', filename='images/KARTASI01EXC1009-40402.jpg')
-        },
-        {
-        'title': 'Mathematical Set',
-        'pages': ['120'],
-        'price': 'Ksh 10000.00',
-        'image_url': url_for('static', filename='images/KARTASI01EXC1009-40402.jpg')
-        },
-        {
-        'title': 'HB Pencil',
-        'pages': ['96'],
-        'price': 'Ksh 10000.00',
-        'image_url': url_for('static', filename='images/img_1.png')
-        },
-        {
-        'title': 'Exercise Book 4',
-        'pages': ['64'],
-        'price': 'Ksh 10000.00',
-        'image_url': 'URL_TO_IMAGE_4'
-        },
-        {
-        'title': 'Exercise Book 5',
-        'pages': ['48'],
-        'price': 'Ksh 10000.00',
-        'image_url': 'URL_TO_IMAGE_5'
-        },
-        {
-        'title': 'Exercise Book 6',
-        'pages': [32],
-        'price': 'Ksh 10000.00',
-
-        'image_url': 'URL_TO_IMAGE_6'
-        }
-        ] %}
-
-
-        <div class="row mb-4">
-            {% for card in set_cards %}
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="contentBx">
-                        <h2>{{ card.title }}</h2>
-                        <div class="size">
-                            <h3>Pages :</h3>
-                            {% for pages in card.pages %}
-                            <span>{{ pages }}</span>
-                            {% endfor %}
-                        </div>
-                        <div class="price">
-                            <h6>Price: {{ card.price }}</h6></div>
-                        <a href="#">Buy Now</a>
-                         <button type="button" class="btn btn-success mt-1 add-to-basket"
-                                data-product-name="{{ card.title }}" data-product-price="{{ card.price }}"
-                                data-toggle="modal" data-target="#productModal"
-                                onclick="addToCart('{{ card.title }}', '{{ card.price }}')">
-                            Add to Basket
-                        </button>
-
-                    </div>
-                    <div class="imgBx">
-                        <img src="{{ card.image_url }}">
-                    </div>
-                </div>
-            </div>
-            {% if loop.index % 3 == 0 %}
-        </div>
-        <div class="row mb-4">
-            {% endif %}
-            {% endfor %}
-        </div>
-        <!-- End of loop -->
-    </div>
-</div>
-
-
-<div class="intro-info-content text-center">
-    <div class="text-center">
-        <h1 class="display-3 mb-2 wow fadeInDown" data-wow-delay="0.3s">Exercise Books
-            <a class="indigo-text font-weight-bold">COLLECTION</a>
-        </h1>
-        <h5 class="text-uppercase mb-5 mt-1 font-weight-bold wow fadeInDown" data-wow-delay="0.3s">
-            Free delivery & special prices</h5>
-    </div>
-</div>
-
-
-<div class="custom-container">
-    <div class="card-container">
-        <!-- Define a list of cards with their properties -->
-
-        {% set set_cards = [
-        {
-        'title': 'Exercise Book',
-        'pages': ['200'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book',
-        'pages': ['120'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/KARTASI01EXC1009-40402.jpg')
-        },
-        {
-        'title': 'Exercise Book',
-        'pages': ['96'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book',
-        'pages': ['200'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book',
-        'pages': ['120'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/KARTASI01EXC1009-40402.jpg')
-        },
-        {
-        'title': 'Exercise Book',
-        'pages': ['96'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png')
-        },
-        {
-        'title': 'Exercise Book',
-        'pages': ['64'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png') },
-        {
-        'title': 'Exercise Book',
-        'pages': ['48'],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png') },
-        {
-        'title': 'Exercise Book',
-        'pages': [32],
-        'price': 'Ksh 250.00',
-        'image_url': url_for('static', filename='images/img_7.png') }
-        ] %}
-
-
-        <div class="row mb-4">
-            {% for card in set_cards %}
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="contentBx">
-                        <h2>{{ card.title }}</h2>
-
-                        <div class="price">
-                            <h6>Price: {{ card.price }}</h6></div>
-                        <a href="#">Buy Now</a>
-                        <!-- Modify the "Add to Basket" button to call addToCart function -->
-                        <button type="button" class="btn btn-success mt-1 add-to-basket"
-                                data-product-name="{{ card.title }}" data-product-price="{{ card.price }}"
-                                data-toggle="modal" data-target="#productModal"
-                                onclick="addToCart('{{ card.title }}', '{{ card.price }}')">
-                            Add to Basket
-                        </button>
-
-                    </div>
-                    <div class="imgBx">
-                        <img src="{{ card.image_url }}">
-                    </div>
-                </div>
-            </div>
-            {% if loop.index % 3 == 0 %}
-        </div>
-        <div class="row mb-4">
-            {% endif %}
-            {% endfor %}
-        </div>
-        <!-- End of loop -->
-    </div>
-</div>
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel"
      aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -723,111 +423,9 @@
     </div>
 </div>
 <!-- JavaScript -->
-<script>
-    function addToCart(name, price) {
-        const existingItem = cart.items.find(item => item.name === name);
-
-        if (existingItem) {
-            // If the item already exists in the cart, increase its quantity
-            existingItem.quantity++;
-        } else {
-            // If it's a new item, add it to the cart with quantity 1
-            const newItem = {name, price, quantity: 1};
-            cart.items.push(newItem);
-        }
-
-        // Update the total price
-        cart.total += parseFloat(price);
-
-        // Update the cart display
-        displayCart();
-        showProductModal(name, price);
-    }
-
-    // Initialize cart data structure
-    const cart = {
-        items: [], // Array to store items
-        total: 0,  // Total price of items in the cart
-    };
-
-    // Get all "Add to Cart" buttons
-    const addToCartButtons = document.querySelectorAll(".add-to-basket");
-
-    // Get the cart element
-    const cartElement = document.getElementById("cart");
-
-    // Get the product modal element
-    const productModal = document.getElementById("productModal");
-
-    // Get the cart icon element
-    const cartIcon = document.getElementById("cart-icon");
-
-    // Function to add an item to the cart
-    function addToCart(name, price) {
-        const existingItem = cart.items.find(item => item.name === name);
-
-        if (existingItem) {
-            // If the item already exists in the cart, increase its quantity
-            existingItem.quantity++;
-        } else {
-            // If it's a new item, add it to the cart with quantity 1
-            const newItem = {name, price, quantity: 1};
-            cart.items.push(newItem);
-        }
-
-        // Update the total price
-        cart.total += parseFloat(price);
-
-        // Update the cart display
-        displayCart();
-        showProductModal(name, price);
-    }
-
-    // Function to display the cart
-    function displayCart() {
-        const cartElement = document.getElementById("cart");
-        cartElement.innerHTML = "";
-
-        cart.items.forEach(item => {
-            const listItem = document.createElement("li");
-            listItem.textContent = `${item.name} (Quantity: ${item.quantity}) - Subtotal: $${(item.price * item.quantity).toFixed(2)}`;
-            cartElement.appendChild(listItem);
-        });
-
-        // Display the total price
-        const totalElement = document.createElement("li");
-        totalElement.textContent = `Total: $${cart.total.toFixed(2)}`;
-        cartElement.appendChild(totalElement);
-    }
-
-    // Function to show the product modal
-    function showProductModal(name, price) {
-        const productName = document.getElementById("productName");
-        const productPrice = document.getElementById("productPrice");
-
-        // Set the modal content
-        productName.textContent = name;
-        productPrice.textContent = `${price}`;
-
-        // Show the modal
-        productModal.classList.add("show");
-        productModal.style.display = "block";
-    }
-
-    // Add event listeners to "Add to Basket" buttons
-    addToCartButtons.forEach(button => {
-        button.addEventListener("click", () => {
-            const name = button.getAttribute("data-product-name");
-            const price = button.getAttribute("data-product-price");
-            addToCart(name, price);
-        });
-    });
-
-    // Add event listener to cart icon to display cart items
-    cartIcon.addEventListener("click", () => {
-        displayCart();
-    });
+<script src="javaScript.js">
 </script>
+
 
 </body>
 </html>
