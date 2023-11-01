@@ -2,6 +2,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DecimalField
 from wtforms.validators import DataRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
+from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm import relationship
 
 from flask import request
 from shop_products import *
@@ -19,7 +21,7 @@ from sqlalchemy.exc import IntegrityError
 from flask_admin.contrib.sqla import ModelView
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from wtforms.validators import DataRequired, EqualTo, Length
-from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, flash, request, redirect, url_for, send_from_directory, jsonify, json
 from wtforms import StringField, FileField, SelectField, SubmitField, DecimalField, IntegerField, PasswordField, \
     BooleanField, \
     ValidationError
@@ -66,17 +68,6 @@ def load_user(user_id):
         return None
 
 
-class Product(db.Model):
-    __tablename__ = 'product'
-    __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), nullable=False)
-    pages = db.Column(db.String(25), nullable=False)
-    price = db.Column(db.String(20), nullable=False)
-    image_url = db.Column(db.String(255), nullable=False)  # Specify a length for VARCHAR, e.g., 255
-    description = db.Column(db.String(500))
-
-
 class ProductsForm(FlaskForm):
     title = StringField('Product Name', validators=[DataRequired()])
     quantity = StringField('Quantity', validators=[DataRequired()])
@@ -87,7 +78,69 @@ class ProductsForm(FlaskForm):
     submit = SubmitField("Submit")
 
 
-# create a Model
+class Product(db.Model):
+    __tablename__ = 'product'
+    __table_args__ = {'extend_existing': True}
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    pages = db.Column(db.String(25), nullable=False)
+    price = db.Column(db.String(20), nullable=False)
+    image_url = db.Column(db.String(255), nullable=False)  # Specify a length for VARCHAR, e.g., 255
+    description = db.Column(db.String(500))
+    cart_items = db.relationship('CartItem', backref='product', lazy='dynamic')
+
+
+# create a CartItems Model
+class CartItem(db.Model):
+    __tablename__ = 'cart'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    quantity = db.Column(db.Integer, default=1)
+    user_id = Column(Integer, ForeignKey('shopuser.id'))  # Foreign key linking cart to ShopUser
+    # Define a relationship with the Product model
+    product_item = db.relationship('Product', backref='cart_item')
+    user = relationship('ShopUser', back_populates='cart')
+
+    def __init__(self, product, quantity=1):
+        self.product = product
+        self.quantity = quantity
+
+
+# create a Shop-User Model
+class ShopUser(db.Model):
+    __tablename__ = 'shopuser'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    email = db.Column(db.String(50), unique=True, nullable=False)
+    password_hash = db.Column(db.String(50))
+    full_name = db.column(db.String(100))
+    date_registered = db.Column(db.DateTime, default=datetime.utcnow)
+
+    cart = db.relationship('CartItem', backref='cart', lazy='dynamic')
+
+    @property
+    def password(self):
+        raise AttributeError("Password is not a readable Attribute")
+
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+
+class ShopUsersForm(FlaskForm):
+    full_name = StringField('Full Names', validators=[DataRequired()])
+    username = StringField('User Name', validators=[DataRequired()])
+    email = StringField('Email Address', validators=[DataRequired()])
+    phone_number = StringField('Phone Number', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    password_hash = StringField('Password', validators=[DataRequired()])
+    submit = SubmitField("Submit")
+
+
+
 class Student(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
@@ -114,71 +167,30 @@ class Student(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return f"Student('{self.name}', '{self.email}')"
+        return f"User('{self.name}', '{self.email}')"
 
 
-# Define class names for different grades
-class Grade1Student(Student):
-    pass
-
-
-class Grade2Student(Student):
-    pass
-
-
-class Grade3Student(Student):
-    pass
-
-
-class Grade4Student(Student):
-    pass
-
-
-class Grade5Student(Student):
-    pass
-
-
-class Grade6Student(Student):
-    pass
-
-
-class Grade7Student(Student):
-    pass
-
-
-class Grade8Student(Student):
-    pass
-
-
-class GradePP1Student(Student):
-    pass
-
-
-class GradePP2Student(Student):
-    pass
-
-
-# dictionary to map grade names to class names
+# Define class names for different grades using a dictionary
 GRADE_CLASSES = {
-    "Grade 1": Grade1Student,
-    "Grade 2": Grade2Student,
-    "Grade 3": Grade3Student,
-    "Grade 4": Grade4Student,
-    "Grade 5": Grade5Student,
-    "Grade 6": Grade6Student,
-    "Grade 7": Grade7Student,
-    "Grade 8": Grade8Student,
-    "Grade PP1": GradePP1Student,
-    "Grade PP2": GradePP2Student,
+    "Grade 1": "Grade1Student",
+    "Grade 2": "Grade2Student",
+    "Grade 3": "Grade3Student",
+    "Grade 4": "Grade4Student",
+    "Grade 5": "Grade5Student",
+    "Grade 6": "Grade6Student",
+    "Grade 7": "Grade7Student",
+    "Grade 8": "Grade8Student",
+    "Grade PP1": "GradePP1Student",
+    "Grade PP2": "GradePP2Student",
     # Add more grades here
 }
 
-# Create instances dynamically based on grade names
-for grade_name, grade_class in GRADE_CLASSES.items():
-    globals()[grade_class.__name__] = type(
-        grade_class.__name__,
+# Create classes dynamically based on grade names
+for grade_name, class_name in GRADE_CLASSES.items():
+    globals()[class_name] = type(
+        class_name,
         (Student,),
-        {"__tablename__": grade_name.lower() + "_students"}
+        {"__tablename__": class_name.lower() + "_students"}
     )
 
 
@@ -208,26 +220,6 @@ class SchoolDataBaseValidationForm(FlaskForm):
     submit = SubmitField("Submit")
 
     submit = SubmitField('Submit')
-
-
-class ImageUploadForm(FlaskForm):
-    # image = FileField('Upload Image', validators=[FileAllowed(photos, 'Only Images Are Allowed'), FileRequired()])
-    # submit = SubmitField('Upload')
-
-    # UPDATE DATABASE RECORD
-    GRADE_CLASSES = {
-        'Grade 1': Grade1Student,
-        'Grade 2': Grade2Student,
-        'Grade 3 ': Grade3Student,
-        'Grade 4': Grade4Student,
-        'Grade 5': Grade5Student,
-        'Grade 6': Grade6Student,
-        'Grade 7': Grade7Student,
-        'Grade 8': Grade8Student,
-        'PP1': GradePP1Student,
-        'PP2': GradePP2Student,
-        # Add other grades here
-    }
 
 
 @app.route('/')
@@ -334,10 +326,9 @@ def delete(id):
                                GRADE_CLASSES=GRADE_CLASSES)
 
 
-
 #
 @login_required
-def update(id):
+def update_student(id):
     form = SchoolDataBaseValidationForm()
     name_to_update = Student.query.get_or_404(id)
 
@@ -366,7 +357,7 @@ def update(id):
     else:
         return render_template("update.html",
                                form=form,
-                               name_to_update=name_to_update, id=id)
+                               name_to_update=name_to_update)
 
 
 class SchoolValidationForm(FlaskForm):
@@ -380,10 +371,11 @@ class SchoolValidationForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-class PasswordForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired()])
-    submit = SubmitField('Submit')
-
+#
+# class PasswordForm(FlaskForm):
+#     email = StringField('Email', validators=[DataRequired()])
+#     submit = SubmitField('Submit')
+#
 
 @app.route('/name', methods=['GET', 'POST'])
 def name():
@@ -399,57 +391,12 @@ def name():
         form.phone_number = ''
 
         flash(" Admission Request Submitted Successfully Patiently Wait For Our Response")
-    return render_template("name.html", name=name, form=form)
-
-
-class Comment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    email = db.Column(db.String(100), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-
-
-@app.route('/add_comment', methods=['POST'])
-def add_comment():
-    if request.method == 'POST':
-        name = request.form['name']
-        email = request.form['email']
-        content = request.form['content']
-
-        comment = Comment(name=name, email=email, content=content)
-        db.session.add(comment)
-        db.session.commit()
-
-    return redirect(url_for('contact_us'))
+    return render_template("name.html", name=name, form=form, parent_name=parent_name)
 
 
 @app.route('/contact_us')
 def contact_us():
-    comments = Comment.query.all()
-    return render_template('contact_us.html', comments=comments)
-
-
-@app.route
-def test_pw():
-    email = None
-    password = None
-    pw_to_check = None
-    form = PasswordForm()
-
-    if form.validate_on_submit():
-        email = form.email.data
-        password = form.password_hash.data
-
-        # Clear
-        form.email.data = ""
-        form.password_hash.data = ""
-
-        # Lookup Teacher By Email
-        pw_to_check = Student.query.filter_by(form.email.data)
-
-        passed = check_password_hash(pw_to_check)
-    return render_template("test_pw", email=email, passed=passed,
-                           password=password, pw_to_check=pw_to_check, form=form)
+    return render_template('contact_us.html')
 
 
 # create  login form
@@ -521,36 +468,158 @@ def admin():
     return render_template('admin.html', form=form)
 
 
-@app.route('/add_to_basket', methods=['POST'])
-def add_to_basket():
-    if request.method == 'POST':
-        item_name = request.form['item_name']
-        price = float(request.form['price'])
 
-        # Insert the item into the shopping cart table
-        cursor = mysql.connection.cursor()
-        cursor.execute("INSERT INTO shopping_cart (item_name, price, quantity) VALUES (%s, %s, 1)", (item_name, price))
-        mysql.connection.commit()
-        cursor.close()
 
-        return redirect('/products')  # Redirect to the products page after adding an item
+# @app.route('/add_user', methods=['GET', 'POST'])
+# def add_user():
+#     form = ShopUsersForm()
+#
+#     if form.validate_on_submit():
+#         hashed_pw = generate_password_hash(form.password_hash.data, method='scrypt')
+#
+#         shopuser = ShopUser(
+#             username=form.username.data,
+#             email=form.email.data,
+#             phone_number=form.phone_number.data,
+#             password_hash=hashed_pw,
+#             full_name=form.full_name.data
+#         )
+#
+#         form.username.data = ''
+#         form.email.data = ''
+#         form.phone_number.data = ''
+#         form.full_name.data = ''
+#         # ADD PRODUCT TO DATABASE
+#         db.session.add(shopuser)
+#         db.session.commit()
+#         flash("Welcome")
+#
+#         return redirect(url_for('shop_user'))  # Correct the redirect URL
+#
+#     our_products = ShopUser.query.order_by(ShopUser.id.asc()).all()
+#     return render_template("add_user.html", form=form, our_products=our_products)
 
+@app.route('/add_user', methods=['GET', 'POST'])
+def add_user():
+    if current_user.is_authenticated:
+        return redirect(url_for('shop'))
+    form = ShopUsersForm()
+
+    if form.validate_on_submit():
+        hashed_pw = generate_password_hash(form.password_hash.data, method='scrypt')
+
+        shopuser = ShopUser(
+            username=form.username.data,
+            email=form.email.data,
+            phone_number=form.phone_number.data,
+            password_hash=hashed_pw,
+            full_name=form.full_name.data
+        )
+
+        form.username.data = ''
+        form.email.data = ''
+        form.phone_number.data = ''
+        form.full_name.data = ''
+        # ADD PRODUCT TO DATABASE
+        db.session.add(shopuser)
+        db.session.commit()
+        flash("Welcome!")
+
+        return redirect(url_for('shop'))
+
+    our_products = ShopUser.query.order_by(ShopUser.id.asc()).all()
+    return render_template("add_user.html", form=form, our_products=our_products)
 
 @app.route('/cart')
+@login_required
 def cart():
-    try:
-        # Fetch cart items from the database
-        cursor = mysql.connection.cursor()
-        cursor.execute("SELECT item_name, price, quantity FROM shopping_cart")
-        cart = cursor.fetchall()
-        cursor.close()
+    user_id = current_user.id
+    cart_items = CartItem.query.filter_by(user_id=user_id).all()
+    products = []
+    final_total = 0
 
-        return render_template('cart.html', cart=cart)
+    for item in cart_items:
+        product = Product.query.get(item.product_id)
+        product.quantity = item.quantity
+        final_total += float(product.price) * item.quantity
+        products.append(product)
+
+    return render_template('cart.html', cart=products, final_total=final_total)
+
+
+@app.route('/add_to_cart', methods=['POST'])
+@login_required
+def add_to_cart():
+    try:
+        product_id = request.get_json().get('id')
+        user_id = current_user.id
+        product = Product.query.get(product_id)
+
+        if product:
+            cart_item = CartItem.query.filter_by(user_id=user_id, product_id=product_id).first()
+
+            if cart_item:
+                # If the product is already in the cart, increase the quantity
+                cart_item.quantity += 1
+            else:
+                # If the product is not in the cart, create a new cart item
+                cart_item = CartItem(user_id=user_id, product_id=product_id, quantity=1)
+
+            db.session.add(cart_item)
+            db.session.commit()
+
+            return jsonify({'success': True, 'message': 'Product added to the cart!'})
+        else:
+            return jsonify({'success': False, 'message': 'Product not found'})
     except Exception as e:
-        # Handle the error, e.g., print the error message for debugging
-        print(f"Error fetching cart items: {str(e)}")
-        # You can also redirect to an error page
-        return render_template('500.html')
+        return jsonify({"success": False, 'error': str(e)})
+
+# app.route('/cart', methods=['GET'])
+# def cart():
+#     if current_user.is_authenticated:
+#         user_id = current_user.id
+#         cart_items = Product.query.filter_by(user_id=user_id).all()
+#         products = []
+#         final_total = 0
+#
+#         for item in cart_items:
+#             product = Product.query.get(item.product_id)
+#             product.quantity = item.quantity
+#             final_total += product.price * product.quantity
+#             products.append(product)
+#             return render_template('cart.html', cart=products, final_total=final_total)
+#
+#         else:
+#             # Handle for unauthenticated users and redirects them to a login page
+#             flash("Please login in to access the Cart ", 'warning')
+#             return redirect(url_for('add_ser.html'))
+
+# @app.route('/add_to_cart', methods=['POST'])
+# def add_to_cart():
+#     try:
+#         product_id = request.get_json().get('id')
+#         user_id = current_user.id  # Assuming you're using Flask-Login
+#
+#         product = Product.query.get(product_id)
+#
+#         if product:
+#             cart_item = Product.query.filter_by(user_id=user_id, product_id=product_id).first()
+#
+#             if cart_item:
+#                 # If the product is already in the cart, increase the quantity
+#                 cart_item.quantity += 1
+#             else:
+#                 # If the product is not in the cart, create a new cart item
+#                 cart_item = CartItem(product=product, user_id=user_id)
+#
+#             db.session.add(cart_item)
+#             db.session.commit()
+#
+#             return jsonify({'success': True, 'message': 'Product added to the cart!'})
+#         else:
+#             return jsonify({'success': False, 'message': 'Product not found'})
+#     except Exception as e:
+#         return jsonify({"success": False, 'error': str(e)})
 
 
 @app.route('/checkout')
@@ -558,7 +627,7 @@ def checkout():
     # Add checkout logic here
     return render_template('checkout.html')
 
-@app.route('/shop/<int:product_id>')
+
 @app.route('/shop', defaults={'product_id': None})
 def shop(product_id):
     if product_id is not None:
@@ -618,7 +687,7 @@ def delete_product(id):
     return redirect(url_for('add_products'))  # Redirect to the products page
 
 
-# Flask route for updating a product
+# Flask route for updat    ing a product
 @app.route('/update_product/<int:id>', methods=['GET', 'POST'])
 def update_product(id):
     form = ProductsForm()  # Instantiate the form
