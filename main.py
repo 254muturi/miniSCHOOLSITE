@@ -492,6 +492,10 @@ def user(name):
 def about():
     return render_template('about.html')
 
+@app.route('/extra_curriculum')
+def extra_curriculum():
+    return render_template("extra_curriculum.html")
+
 
 @app.route('/students')
 def students():
