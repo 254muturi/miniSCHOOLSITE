@@ -31,7 +31,6 @@ from flask_login import UserMixin, login_user, LoginManager, login_required, log
 # from werkzeug.utils import secure_filename
 # from werkzeug.datastructures import FileStorage
 
-
 app = Flask(__name__)
 
 # MySQL Database  First MySQL Database
@@ -68,16 +67,6 @@ def load_user(user_id):
         return None
 
 
-class ProductsForm(FlaskForm):
-    title = StringField('Product Name', validators=[DataRequired()])
-    quantity = StringField('Quantity', validators=[DataRequired()])
-    pages = StringField('Pages', validators=[DataRequired()])
-    price = DecimalField('Price', validators=[DataRequired()])
-    description = StringField('Description', validators=[DataRequired()])
-    image_url = FileField('Product Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Only images are allowed.')])
-    submit = SubmitField("Submit")
-
-
 class Product(db.Model):
     __tablename__ = 'product'
     __table_args__ = {'extend_existing': True}
@@ -90,16 +79,34 @@ class Product(db.Model):
     cart_items = db.relationship('CartItem', backref='product', lazy='dynamic')
 
 
-# create a CartItems Model
-class CartItem(db.Model):
+class ProductsForm(FlaskForm):
+    title = StringField('Product Name', validators=[DataRequired()])
+    quantity = StringField('Quantity', validators=[DataRequired()])
+    pages = StringField('Pages', validators=[DataRequired()])
+    price = DecimalField('Price', validators=[DataRequired()])
+    description = StringField('Description', validators=[DataRequired()])
+    image_url = FileField('Product Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'], 'Only images are allowed.')])
+    submit = SubmitField("Submit")
+
+
+class Cart(db.Model):
     __tablename__ = 'cart'
     id = db.Column(db.Integer, primary_key=True)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
     quantity = db.Column(db.Integer, default=1)
-    user_id = Column(Integer, ForeignKey('shopuser.id'))  # Foreign key linking cart to ShopUser
+    user_id = db.Column(db.Integer, db.ForeignKey('shopuser.id'))
+
+
+# create a CartItems Model
+class CartItem(db.Model):
+    __tablename__ = 'cartitem'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    quantity = db.Column(db.Integer, default=1)
+    user_id = db.Column(Integer, ForeignKey('shopuser.id'))  # Foreign key linking cart to ShopUser
     # Define a relationship with the Product model
     product_item = db.relationship('Product', backref='cart_item')
-    user = relationship('ShopUser', back_populates='cart')
+    user = db.relationship('ShopUser', back_populates='cart_items')
 
     def __init__(self, product, quantity=1):
         self.product = product
@@ -112,12 +119,12 @@ class ShopUser(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
     email = db.Column(db.String(50), unique=True, nullable=False)
-    password_hash = db.Column(db.String(50))
     full_name = db.column(db.String(100))
     date_registered = db.Column(db.DateTime, default=datetime.utcnow)
 
-    cart = db.relationship('CartItem', backref='cart', lazy='dynamic')
-
+    cart_items = db.relationship('CartItem', back_populates='user', lazy='dynamic')
+    # PASSWORD MANENOX
+    password_hash = db.Column(db.String(50))
     @property
     def password(self):
         raise AttributeError("Password is not a readable Attribute")
@@ -138,7 +145,6 @@ class ShopUsersForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     password_hash = StringField('Password', validators=[DataRequired()])
     submit = SubmitField("Submit")
-
 
 
 class Student(db.Model, UserMixin):
@@ -468,41 +474,10 @@ def admin():
     return render_template('admin.html', form=form)
 
 
-
-
-# @app.route('/add_user', methods=['GET', 'POST'])
-# def add_user():
-#     form = ShopUsersForm()
-#
-#     if form.validate_on_submit():
-#         hashed_pw = generate_password_hash(form.password_hash.data, method='scrypt')
-#
-#         shopuser = ShopUser(
-#             username=form.username.data,
-#             email=form.email.data,
-#             phone_number=form.phone_number.data,
-#             password_hash=hashed_pw,
-#             full_name=form.full_name.data
-#         )
-#
-#         form.username.data = ''
-#         form.email.data = ''
-#         form.phone_number.data = ''
-#         form.full_name.data = ''
-#         # ADD PRODUCT TO DATABASE
-#         db.session.add(shopuser)
-#         db.session.commit()
-#         flash("Welcome")
-#
-#         return redirect(url_for('shop_user'))  # Correct the redirect URL
-#
-#     our_products = ShopUser.query.order_by(ShopUser.id.asc()).all()
-#     return render_template("add_user.html", form=form, our_products=our_products)
-
 @app.route('/add_user', methods=['GET', 'POST'])
 def add_user():
     if current_user.is_authenticated:
-        return redirect(url_for('shop'))
+        return redirect(url_for('cart'))
     form = ShopUsersForm()
 
     if form.validate_on_submit():
@@ -520,7 +495,7 @@ def add_user():
         form.email.data = ''
         form.phone_number.data = ''
         form.full_name.data = ''
-        # ADD PRODUCT TO DATABASE
+        # ADD USER TO DATABASE
         db.session.add(shopuser)
         db.session.commit()
         flash("Welcome!")
@@ -529,6 +504,7 @@ def add_user():
 
     our_products = ShopUser.query.order_by(ShopUser.id.asc()).all()
     return render_template("add_user.html", form=form, our_products=our_products)
+
 
 @app.route('/cart')
 @login_required
@@ -544,7 +520,24 @@ def cart():
         final_total += float(product.price) * item.quantity
         products.append(product)
 
-    return render_template('cart.html', cart=products, final_total=final_total)
+    return render_template('cart.html', cart_items=cart_items, final_total=final_total)
+
+
+@app.route('/shop', defaults={'product_id': None})
+def shop(product_id):
+    if product_id is not None:
+        # Display the product detail for the given 'product_id'
+        product = Product.query.get(product_id)
+        if product:
+            return render_template('product_detail.html', product=product)
+        else:
+            # Handle the case where the product with the specified ID is not found.
+            return render_template('500.html')
+    else:
+        # Display a list of products
+        products = Product.query.all()
+        return render_template('shop.html', products=products)
+
 
 
 @app.route('/add_to_cart', methods=['POST'])
@@ -570,78 +563,18 @@ def add_to_cart():
 
             return jsonify({'success': True, 'message': 'Product added to the cart!'})
         else:
+            # Product not found, handle appropriately
             return jsonify({'success': False, 'message': 'Product not found'})
+
     except Exception as e:
+        flash('Please log in to add products to the cart', 'warning')
         return jsonify({"success": False, 'error': str(e)})
-
-# app.route('/cart', methods=['GET'])
-# def cart():
-#     if current_user.is_authenticated:
-#         user_id = current_user.id
-#         cart_items = Product.query.filter_by(user_id=user_id).all()
-#         products = []
-#         final_total = 0
-#
-#         for item in cart_items:
-#             product = Product.query.get(item.product_id)
-#             product.quantity = item.quantity
-#             final_total += product.price * product.quantity
-#             products.append(product)
-#             return render_template('cart.html', cart=products, final_total=final_total)
-#
-#         else:
-#             # Handle for unauthenticated users and redirects them to a login page
-#             flash("Please login in to access the Cart ", 'warning')
-#             return redirect(url_for('add_ser.html'))
-
-# @app.route('/add_to_cart', methods=['POST'])
-# def add_to_cart():
-#     try:
-#         product_id = request.get_json().get('id')
-#         user_id = current_user.id  # Assuming you're using Flask-Login
-#
-#         product = Product.query.get(product_id)
-#
-#         if product:
-#             cart_item = Product.query.filter_by(user_id=user_id, product_id=product_id).first()
-#
-#             if cart_item:
-#                 # If the product is already in the cart, increase the quantity
-#                 cart_item.quantity += 1
-#             else:
-#                 # If the product is not in the cart, create a new cart item
-#                 cart_item = CartItem(product=product, user_id=user_id)
-#
-#             db.session.add(cart_item)
-#             db.session.commit()
-#
-#             return jsonify({'success': True, 'message': 'Product added to the cart!'})
-#         else:
-#             return jsonify({'success': False, 'message': 'Product not found'})
-#     except Exception as e:
-#         return jsonify({"success": False, 'error': str(e)})
 
 
 @app.route('/checkout')
 def checkout():
     # Add checkout logic here
     return render_template('checkout.html')
-
-
-@app.route('/shop', defaults={'product_id': None})
-def shop(product_id):
-    if product_id is not None:
-        # Display the product detail for the given 'product_id'
-        product = Product.query.get(product_id)
-        if product:
-            return render_template('product_detail.html', product=product)
-        else:
-            # Handle the case where the product with the specified ID is not found.
-            return render_template('500.html')
-    else:
-        # Display a list of products
-        products = Product.query.all()
-        return render_template('shop.html', products=products)
 
 
 @app.route('/add_products', methods=['GET', 'POST'])

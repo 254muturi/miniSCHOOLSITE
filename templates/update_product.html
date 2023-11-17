@@ -14,10 +14,20 @@
         <input type="text" name="new_price" id="new_price" class="form-control" value="{{ product.price }}">
     </div>
     <div class="form-group">
+        <label for="new_pages" class="form-label">Product Pages</label>
+        <input type="text" name="new_pages" id="new_pages" class="form-control" value="{{ product.pages }}">
+    </div>
+    <div class="form-group">
         <label for="new_description" class="form-label">Product Description</label>
         <textarea name="new_description" id="new_description" class="form-control">{{ product.description }}</textarea>
     </div>
-    <button  type="submit" class="btn mt-3 btn-primary">Update Product</button>
+    <div class="form-group">
+        <label for="new_image_url" class="form-label">Product Image</label>
+<input type="text" name="image_url" id="new_image_url" class="form-control" value="{{ product.image }}">
+    </div>
+
+
+    <button type="submit" class="btn mt-3 btn-primary">Update Product</button>
 </form>
 
 <a href="{{ url_for('add_products') }}" class="btn mt-3 btn-secondary">Back to Products</a>

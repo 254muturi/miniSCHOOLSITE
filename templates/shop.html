@@ -14,283 +14,286 @@
     <!-- Jarallax CSS (if not already included in your project) -->
     <link href="path/to/jarallax.css" rel="stylesheet">
     <!-- Your custom CSS styles -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/style.css') }}">
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</head>
+<style>
+    /* Global styles */
+    h5 {
+        color: #f0f0f0;
+    }
 
-    <style>
-        /* Global styles */
-        h5 {
-            color: #f0f0f0;
-        }
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        background: #131313;
+    }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: #131313;
-        }
+    /* Global styles */
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Poppins', sans-serif;
+        background: #131313;
+    }
 
-        /* Global styles */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: #131313;
-        }
+    /* Hero section styles */
+    .hero {
+        background-image: url('/static/images/img_8.png');
+        background-size: cover;
+        background-position: center center;
+        text-align: center;
+        padding: 10% 0; /* Adjust as needed */
+        color: #fff;
+    }
 
-        /* Hero section styles */
+    .hero h1 {
+        font-size: 4vw; /* Responsive font size */
+    }
+
+    .hero p {
+        font-size: 1.5vw; /* Responsive font size */
+    }
+
+    .hero .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 1.2rem; /* Responsive font size */
+        background-color: #007BFF;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+    /* Media query for smaller screens */
+    @media (max-width: 768px) {
         .hero {
-            background-image: url('/static/images/img_8.png');
-            background-size: cover;
-            background-position: center center;
-            text-align: center;
-            padding: 10% 0; /* Adjust as needed */
-            color: #fff;
+            background-size: cover; /* Keep background-size to cover for small screens */
+            padding: 20% 0; /* Increase padding for better readability */
         }
 
         .hero h1 {
-            font-size: 4vw; /* Responsive font size */
+            font-size: 6vw; /* Adjust font size for smaller screens */
         }
 
         .hero p {
-            font-size: 1.5vw; /* Responsive font size */
+            font-size: 3vw; /* Adjust font size for smaller screens */
         }
 
         .hero .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 1.2rem; /* Responsive font size */
-            background-color: #007BFF;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
+            font-size: 1rem; /* Adjust font size for smaller screens */
         }
+    }
 
-        /* Media query for smaller screens */
-        @media (max-width: 768px) {
-            .hero {
-                background-size: cover; /* Keep background-size to cover for small screens */
-                padding: 20% 0; /* Increase padding for better readability */
-            }
+    /* Card section styles */
+    .card-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        max-width: 1200px; /* Adjust as needed */
+        margin: 20px; /* Added margin for better spacing */
+    }
 
-            .hero h1 {
-                font-size: 6vw; /* Adjust font size for smaller screens */
-            }
+    .card {
+        position: relative;
+        width: 320px;
+        max-width: 100%; /* Make the cards responsive */
+        height: 450px;
+        background: #131313;
+        border-radius: 20px;
+        overflow: hidden;
+        margin: 10px; /* Added margin for better spacing */
+        color: #fff;
+    }
 
-            .hero p {
-                font-size: 3vw; /* Adjust font size for smaller screens */
-            }
+    .card:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #9bdc28;
+        clip-path: circle(150px at 80% 20%);
+        transition: 0.5s ease-in-out;
+    }
 
-            .hero .btn {
-                font-size: 1rem; /* Adjust font size for smaller screens */
-            }
-        }
+    .card:hover:before {
+        clip-path: circle(300px at 80% -20%);
+    }
 
-        /* Card section styles */
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-            max-width: 1200px; /* Adjust as needed */
-            margin: 20px; /* Added margin for better spacing */
-        }
+    .card:after {
+        content: 'Fadhili School Shop';
+        position: absolute;
+        top: 60%;
+        left: -5%;
+        font-size: 3em;
+        font-weight: 800;
+        font-style: italic;
+        color: rgba(255, 255, 25, 0.05);
+    }
 
-        .card {
-            position: relative;
-            width: 320px;
-            max-width: 100%; /* Make the cards responsive */
-            height: 450px;
-            background: #131313;
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 10px; /* Added margin for better spacing */
-            color: #fff;
-        }
-
-        .card:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #9bdc28;
-            clip-path: circle(150px at 80% 20%);
-            transition: 0.5s ease-in-out;
-        }
-
-        .card:hover:before {
-            clip-path: circle(300px at 80% -20%);
-        }
-
-        .card:after {
-            content: 'Fadhili School Shop';
-            position: absolute;
-            top: 60%;
-            left: -5%;
-            font-size: 3em;
-            font-weight: 800;
-            font-style: italic;
-            color: rgba(255, 255, 25, 0.05);
-        }
-
-        .card .imgBx {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 1; /* Lower z-index value */
-            width: 100%;
-            height: 220px;
-            transition: 0.5s;
-        }
+    .card .imgBx {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1; /* Lower z-index value */
+        width: 100%;
+        height: 220px;
+        transition: 0.5s;
+    }
 
 
-        .card:hover .imgBx {
-            top: 0%;
-            transform: translateY(0%);
-        }
+    .card:hover .imgBx {
+        top: 0%;
+        transform: translateY(0%);
+    }
 
-        .card .imgBx img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-25deg);
-            width: 270px;
-        }
+    .card .imgBx img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-25deg);
+        width: 270px;
+    }
 
-        .card .contentBx {
-            position: absolute;
-            bottom: -35px;
-            width: 100%;
-            height: 100px;
-            text-align: center;
-            transition: 1s;
-            z-index: 2; /* Higher z-index value */
-        }
-
-
-        .card:hover .contentBx {
-            height: 210px;
-        }
-
-        .card .contentBx h2 {
-            position: relative;
-            font-weight: 600;
-            letter-spacing: 1px;
-            margin: 0;
-        }
-
-        .card .contentBx .size,
-        .card .contentBx .color {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 8px 20px;
-            transition: 0.5s;
-            opacity: 0;
-            visibility: hidden;
-            padding-top: 0;
-            padding-bottom: 5px;
-        }
-
-        .card:hover .contentBx .size {
-            opacity: 1;
-            visibility: visible;
-            transition-delay: 0.5s;
-        }
-
-        .card:hover .contentBx .color {
-            opacity: 1;
-            visibility: visible;
-            transition-delay: 0.6s;
-        }
-
-        .card .contentBx .size h3,
-        .card .contentBx .color h3, h6 {
-            font-weight: 300;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-right: 10px;
-        }
-
-        .card .contentBx .size span {
-            width: 26px;
-            height: 26px;
-            text-align: center;
-            line-height: 26px;
-            font-size: 14px;
-            display: inline-block;
-            color: #007bff;
-            background: #fff;
-            margin: 0 5px;
-            transition: 0.5s;
-            color: #111;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .card .contentBx .size span:hover {
-            background: #9bdc28;
-        }
-
-        .card .contentBx .color span {
-            width: 20px;
-            height: 20px;
-            background: #ff0;
-            border-radius: 50%;
-            margin: 0 5px;
-            cursor: pointer;
-        }
-
-        /*.card .contentBx .color span:nth-child(2) {*/
-        /*    background: #9bdc28;*/
-        /*}*/
-
-        /*.card .contentBx .color span:nth-child(3) {*/
-        /*    background: #03a9f4;*/
-        /*}*/
-
-        /*.card .contentBx .color span:nth-child(4) {*/
-        /*    background: #e91e63;*/
-        /*}*/
-
-        .card .contentBx a {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #fff;
-            border-radius: 4px;
-            margin-top: 0px;
-            text-decoration: none;
-            font-weight: 600;
-            color: #000;
-            opacity: 0;
-            transform: translateY(50px);
-            transition: 0.5s;
-
-        }
-
-        .card:hover .contentBx a {
-            opacity: 1;
-            transform: translateY(0px);
-            transition-delay: 0.75s;
-        }
-
-        #modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 10;
-            display: none;
-        }
+    .card .contentBx {
+        position: absolute;
+        bottom: -35px;
+        width: 100%;
+        height: 100px;
+        text-align: center;
+        transition: 1s;
+        z-index: 2; /* Higher z-index value */
+    }
 
 
-    </style>
+    .card:hover .contentBx {
+        height: 210px;
+    }
+
+    .card .contentBx h2 {
+        position: relative;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin: 0;
+    }
+
+    .card .contentBx .size,
+    .card .contentBx .color {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 20px;
+        transition: 0.5s;
+        opacity: 0;
+        visibility: hidden;
+        padding-top: 0;
+        padding-bottom: 5px;
+    }
+
+    .card:hover .contentBx .size {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.5s;
+    }
+
+    .card:hover .contentBx .color {
+        opacity: 1;
+        visibility: visible;
+        transition-delay: 0.6s;
+    }
+
+    .card .contentBx .size h3,
+    .card .contentBx .color h3, h6 {
+        font-weight: 300;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-right: 10px;
+    }
+
+    .card .contentBx .size span {
+        width: 26px;
+        height: 26px;
+        text-align: center;
+        line-height: 26px;
+        font-size: 14px;
+        display: inline-block;
+        color: #007bff;
+        background: #fff;
+        margin: 0 5px;
+        transition: 0.5s;
+        color: #111;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .card .contentBx .size span:hover {
+        background: #9bdc28;
+    }
+
+    .card .contentBx .color span {
+        width: 20px;
+        height: 20px;
+        background: #ff0;
+        border-radius: 50%;
+        margin: 0 5px;
+        cursor: pointer;
+    }
+
+    /*.card .contentBx .color span:nth-child(2) {*/
+    /*    background: #9bdc28;*/
+    /*}*/
+
+    /*.card .contentBx .color span:nth-child(3) {*/
+    /*    background: #03a9f4;*/
+    /*}*/
+
+    /*.card .contentBx .color span:nth-child(4) {*/
+    /*    background: #e91e63;*/
+    /*}*/
+
+    .card .contentBx a {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #fff;
+        border-radius: 4px;
+        margin-top: 0px;
+        text-decoration: none;
+        font-weight: 600;
+        color: #000;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: 0.5s;
+
+    }
+
+    .card:hover .contentBx a {
+        opacity: 1;
+        transform: translateY(0px);
+        transition-delay: 0.75s;
+    }
+
+    #modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 10;
+        display: none;
+    }
+
+
+</style>
 </head>
-<body>
+
+
 <!-- Hero Section -->
 <div class="hero">
     <div class="container">
@@ -304,24 +307,22 @@
     </div>
 </div>
 <style>
+    /* Your CSS styles here */
     .cart-container {
         display: flex;
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
-
-        align-items: center; /* Vertically center items */
+        justify-content: center;
+        align-items: center;
     }
 
     #cart-icon {
-        margin-right: 10px; /* Add some space between the cart icon and search box */
+        margin-right: 10px;
+        font-size: 36px; /* Increase the size of the cart icon */
     }
 
     .search-box {
         display: flex;
         align-items: center;
-        justify-content: center; /* Center horizontally */
-        align-items: center; /* Center vertically */
-
+        justify-content: center;
     }
 
     .search-input {
@@ -335,27 +336,22 @@
         border: none;
         padding: 5px 10px;
         cursor: pointer;
-
     }
 </style>
-
-<div class="mt-3 cart-container">
-    <a href="/cart" id="cart">
-        <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" fill="currentColor"
-             class="bi bi-cart4 cart-icon" viewBox="0 0 21 21">
-            <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l.5 2H5V5H3.14zM6 5v2h2V5H6zm3 0v2h2V5H9zm3 0v2h1.36l.5-2H12zm1.11 3H12v2h.61l.5-2zM11 8H9v2h2V8zM8 8H6v2h2V8zM5 8H3.89l.5 2H5V8zm0 5a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
-        </svg>
+</head>
+<body>
+<!-- Cart icon linking to "cart.html"  -->
+<div class="cart-container">
+    <a href="{{ url_for('cart') }}">
+        <div class="cart-icon" id="cart-icon">&#128722;</div>
     </a>
 </div>
 
-
-<div class=" mt-3 search-box">
+<div class="mt-3 search-box">
     <input type="text" class="search-input" placeholder="Search products...">
     <button class="search-button">Search</button>
 </div>
-</div>
-<!-- Jarallax JavaScript (if not already included in your project) -->
-<script src="path/to/jarallax.min.js"></script>
+<!-- this is the HTML and JavaScript code                                                                                                                                                <script src="path/to/jarallax.min.js"></script>-->
 <div class="intro-info-content text-center">
     <div class="text-center">
         <h5 class="text-uppercase mt-5 mb-5 mt-1 font-weight-bold wow fadeInDown" data-wow-delay="0.3s">
@@ -363,28 +359,24 @@
         </h5>
     </div>
 </div>
+<!-- Card section -->
 <div class="card-container">
     {% for product in products %}
     <div class="card">
-        <!-- Display a single image for each product -->
         <div class="imgBx">
-            <img src="{{ url_for('static', filename='images/' ~ product.title ~ '.img_1.png') }}" class="d-block w-100"
+            <img src="{{ url_for('static', filename='images/' ~ product.title ~ '.img_1.png') }}"
+                 class="d-block w-100"
                  alt="{{ product.title }} Image">
         </div>
 
-        <!-- Card content below the product image -->
         <div class="contentBx">
             <h1>{{ product.title }}</h1>
             <p style="color: #f0f0f0">Price: Ksh {{ product.price }}</p>
             <p style="color: #f0f0f0">Description: {{ product.description }}</p>
 
-            <!-- Wrap the buttons in a div for side-by-side display -->
             <div class="button-container">
-                <!-- "Buy Now" button that links to the cart.html page -->
-                <a href="{{ url_for('cart') }}" class="btn btn-primary">Buy Now</a>
-
-                <!-- "Add to Cart" button that also links to the cart.html page -->
-                <a href="{{ url_for('cart') }}" class="btn btn-secondary">Add to Cart</a>
+                <!-- Add to Cart button with JavaScript -->
+                <button class="btn btn-secondary add-to-cart" data-product-id="{{ product.id }}">Add to Cart</button>
             </div>
         </div>
     </div>
@@ -394,39 +386,66 @@
     {% endif %}
     {% endfor %}
 </div>
+<!-- Modal -->
 
-
-<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel">Product Added to Cart</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center">
-                    <img id="productImageModal" src="" alt="Product Image">
-                </div>
-                <p class="mt-3">Item added to your cart:</p>
-                <p id="productName"></p>
-                <p id="productPrice"></p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Continue Shopping
-                </button>
-                <a href="/cart.html" class="btn btn-primary">Proceed to Cart</a>
-            </div>
-        </div>
-    </div>
-</div>
 <!-- JavaScript -->
-<script src="javaScript.js">
+<script src="path/to/jarallax.min.js"></script>
+<!-- Add this script tag in the HTML file -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Get all "Add to Cart" buttons
+        const addToCartButtons = document.querySelectorAll(".add-to-cart");
+
+        // Handle "Add to Cart" button click
+        addToCartButtons.forEach(button => {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+                const productId = this.getAttribute("data-product-id");
+
+                // You can retrieve other product data from the DOM or from your data source.
+                const productTitle = this.getAttribute("data-product-title");
+                const productPrice = this.getAttribute("data-product-price");
+                const productDescription = this.getAttribute("data-product-description");
+
+                // Create a JSON object with the product data
+                const productData = {
+                    id: productId,
+                    title: productTitle,
+                    price: productPrice,
+                    description: productDescription
+                };
+
+                // Send the product data to the server to add to the cart
+                addToCart(productData);
+            });
+        });
+
+        // Function to send the product data to the server
+        function addToCart(productData) {
+            // You can make an AJAX request to the server to add the product to the cart
+            // Example using fetch (you'll need to adjust this based on your server-side code):
+            fetch("/add_to_cart", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(productData), // Send the product data as JSON
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Handle the response (e.g., show a confirmation message)
+                if (data.success) {
+                    alert("Product added to the cart!");
+                } else {
+                    alert("Failed to add the product to the cart.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        }
+    });
 </script>
-
-
 </body>
 </html>
 

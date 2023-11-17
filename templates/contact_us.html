@@ -1,36 +1,63 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="my-3 mt-5 about-container">
-    <div class="image-container">
-        <img src="{{ url_for('static', filename='images/skoolKids.jpeg') }}" class="d-block w-100" alt="Slide 1">
-    </div>
-    <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
-        <!-- Left -->
-        <div class="me-5 d-none d-lg-block">
-            <span>Get connected with us on social networks:</span>
+    <div class="my-3 mt-5 about-container">
+        <div class="image-container">
+            <img src="{{ url_for('static', filename='images/skoolKids.jpeg') }}" class="d-block w-100" alt="Slide 1">
+        </div>
+        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+            <!-- Left -->
+            <div class="me-5 d-none d-lg-block">
+                <span>Get connected with us on social networks:</span>
+            </div>
+        </section>
+
+        <!-- Grid container -->
+        <div class="row">
+            <!-- Grid column -->
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+
+                <!-- Links -->
+        <section class="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+            <div class="me-5 d-none d-lg-block">
+
+                <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
+                <p><i class="fas fa-home me-3 text-secondary"></i> Nairobi, Kenya</p>
+                <p>
+                    <i class="fas fa-envelope me-3 text-secondary"></i>
+                    <a href="mailto:info@fadhilifoundation.com">info@fadhilifoundation.com</a>
+                </p>
+                <p><i class="fas fa-phone me-3 text-secondary"></i> + 01 234 567 88</p>
+                <p><i class="fas fa-print me-3 text-secondary"></i> + 01 234 567 89</p>
+            </div>
+        </section>
+
+            <!-- Grid column -->
+        </div>
+        <!-- Grid row -->
+
+        <!-- Add the comment box here -->
+        <div class="comment-box">
+            <h2>Leave a Comment</h2>
+            <form class="comment-form">
+                <input type="text" placeholder="Your Name" required>
+                <input type="email" placeholder="Your Email" required>
+                <textarea placeholder="Your Comment" rows="4" required></textarea>
+                <button type="submit">Submit</button>
+            </form>
         </div>
 
-    </section>
-
-    <!-- Grid container -->
-
-    <!-- Grid column -->
-    <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
-        <!-- Links -->
-        <h6 class="text-uppercase fw-bold mb-4">Contact</h6>
-        <p><i class="fas fa-home me-3"></i> Nairobi, Kenya</p>
-        <p>
-            <i class="fas fa-envelope me-3"></i>
-            <a href="mailto:info@fadhilifoundation.com">info@fadhilifoundation.com</a>
-        </p>
-        <p><i class="fas fa-phone me-3"></i> + 01 234 567 88</p>
-        <p><i class="fas fa-print me-3"></i> + 01 234 567 89</p>
+        <!-- Display existing comments here -->
+        <div class="comments">
+            <h2>Comments</h2>
+            <div class="comment">
+                <h3>John Doe</h3>
+                <p>This is a sample comment.</p>
+            </div>
+            <div class="comment">
+                <h3>Jane Smith</h3>
+                <p>Another comment here.</p>
+            </div>
+        </div>
     </div>
-    <!-- Grid column -->
-</div>
-<!-- Grid row -->
-</div>
-</section>
-</div>
 {% endblock %}

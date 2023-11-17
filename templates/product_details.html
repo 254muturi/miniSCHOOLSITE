@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ product.name }} Details</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<h1>{{ product.name }} Details</h1>
+<p>{{ product.description }}</p>
+
+<div id="selected-variant">
+</div>
+
+<!-- Cart Container -->
+<div id="cart-container">
+    <h2>Shopping Cart</h2>
+    <ul id="cart-items">
+        <!-- Cart items will be displayed here -->
+    </ul>
+    <p>Total Price: Ksh<span id="total-price">0.00</span></p>
+
+    <br>
+    <br>
+    <button id="checkout-button" class="btn btn-primary">Checkout</button>
+</div>
+<br>
+
+<form action="/add_to_cart" method="post">
+    <div class="row" id="variant-cards">
+        {% for variant in product.variants %}
+        <div class="col-md-4">
+            <div class="card mb-4" id="variant-card-{{ variant.id }}">
+                <img src="{{ variant.images[0] }}" class="card-img-top"
+                     alt="{{ variant.id }} - {{ variant.images[0] }}">
+                <div class="card-body">
+                    <h5 class="card-title">Variant: {{ variant.id }}</h5>
+                    <p class="card-text">Size: {{ variant.size }}</p>
+                    <p class="card-text">Color: {{ variant.color }}</p>
+                    <p class="card-text">Price: Ksh{{ variant.price }}</p>
+                    <div class="form-group">
+                        <label for="quantity-{{ variant.id }}">Quantity:</label>
+                        <input type="number" class="form-control" id="quantity-{{ variant.id }}" name="quantity"
+                               value="1" min="1">
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-primary btn-block">Buy Now</a>
+                    <button type="button" class="btn btn-primary btn-block add-to-cart"
+                            data-variant-id="{{ variant.id }}">Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</form>
+<br>
+<button id="pay-now-button" class="btn btn-success">Pay Now</button>
+<br>
+<br>
+
+<!-- Checkout Form -->
+<div id="checkout-form" style="display: none;">
+    <h2>Checkout</h2>
+    <form id="order-form">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="phone">Phone Number:</label>
+            <input type="tel" class="form-control" id="phone" name="phone" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="form-group">
+            <label for="address">Shipping Address:</label>
+            <textarea class="form-control" id="address" name="address" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Place Order</button>
+    </form>
+</div>
+
+<script>
+
+    // JavaScript to update selected variant information and images
+    const variantInputs = document.querySelectorAll('.add-to-cart');
+    const selectedVariantDiv = document.getElementById('selected-variant');
+    const variantCardsDiv = document.getElementById('variant-cards');
+    const product = JSON.parse('{{ product | tojson | safe }}');
+
+    variantInputs.forEach(input => {
+        input.addEventListener('click', (event) => {
+            const variantId = event.currentTarget.getAttribute('data-variant-id');
+            const quantityInput = document.getElementById(`quantity-${variantId}`);
+            const quantity = parseInt(quantityInput.value);
+
+            const selectedVariant = product.variants.find(variant => variant.id === variantId);
+
+            if (selectedVariant) {
+                const price = selectedVariant.price;
+
+                // Check if the variant is already in the cart
+                const existingItem = cart.find(item => item.variantId === variantId);
+
+                if (existingItem) {
+                    // If it exists, update the quantity and price
+                    existingItem.quantity += quantity;
+                } else {
+                    // If it doesn't exist, add a new item to the cart
+                    cart.push({variantId, quantity, price});
+                }
+
+                // Clear the quantity input
+                quantityInput.value = '1';
+
+                // Update the cart display
+                updateCart();
+            }
+        });
+    });
+
+    // Cart data (an array to store selected items)
+    const cart = [];
+
+    // Function to update the cart display
+    function updateCart() {
+        // Clear the cart display
+        const cartItemsList = document.getElementById('cart-items');
+        cartItemsList.innerHTML = '';
+
+        let totalPrice = 0;
+
+        // Loop through the cart items and add them to the display
+        cart.forEach(item => {
+            const cartItem = document.createElement('li');
+            cartItem.textContent = `Variant: ${item.variantId}, Quantity: ${item.quantity}, Price: Ksh${(item.price * item.quantity).toFixed(2)}`;
+            cartItemsList.appendChild(cartItem);
+
+            // Calculate and update the total price
+            totalPrice += item.price * item.quantity;
+        });
+
+        // Update the total price display
+        const totalPriceElement = document.getElementById('total-price');
+        totalPriceElement.textContent = totalPrice.toFixed(2);
+    }
+
+    // Add a click event listener to the "Checkout" button
+    const checkoutButton = document.getElementById('checkout-button');
+    checkoutButton.addEventListener('click', () => {
+        // You can implement the checkout logic here
+        alert('Checkout functionality is not implemented in this example.');
+    });
+</script>
+
+<!-- Include Bootstrap JS (optional) -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

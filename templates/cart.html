@@ -1,26 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-
 <div class="container">
-    <h1>Your Shopping Cart</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart %}
-            <tr>
-                <td>{{ item.name }}</td>
-                <td>{{ item.price }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <p>Total Price: {{ total_price }}</p>
+    <h1>Your Cart Items</h1>
+    <div class="row">
+        {% for item in cart %}
+        <div class="col-4">
+            <h1>{{ item.product_title }}</h1>
+            <p>Price: Ksh {{ item.product_price }}</p>
+            <p>Description: {{ item.product_description }}</p>
+        </div>
+        {% endfor %}
+    </div>
 </div>
-
 {% endblock %}

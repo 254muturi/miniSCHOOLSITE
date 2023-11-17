@@ -22,7 +22,7 @@
 <h2>UPDATE STUDENT </h2>
 <br/>
 <div>
-    <form method="POST" action="/update/{{name_to_update.id}}">
+    <form method="POST" action="/update_student/{{name_to_update.id}}">
         {{ form.hidden_tag() }}
         {{ form.Class_Teacher.label(class="form-label") }}
         {{ form.Class_Teacher(class="form-control",value=name_to_update.name) }}
